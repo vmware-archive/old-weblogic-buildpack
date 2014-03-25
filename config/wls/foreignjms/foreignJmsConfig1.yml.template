@@ -1,0 +1,33 @@
+# Configuration for the WebLogic Foreign JMS Services
+---
+
+# Each section deals with a subsystem
+# Use '|' character to provide separation between Local and Remote JNDI Names
+# Ordering is Local JNDI name | Remote JNDI Name
+# Example:
+#  destinations: jms/LocalQueueJNDIName|jms/RemoteQueueJNDIName
+#  cfs: jms/cf/RemoteQXACF|jms/cf/LocalQXACF
+#
+# Use ';' character to provide multiple jms destinations or Connection Factories
+# ex:
+#  destinations: jms/LocalQueueJNDIName|jms/RemoteQueueJNDIName;jms/LocalTopicJNDIName|jms/RemoteTopicJNDIName
+#  cfs: jms/cf/LocalQXACF|jms/cf/RemoteQXACF
+#
+# For jndi properties, use ';' as separator for various name-value pairs and '=' to denote the name/value.
+# Ensure the javax.namign... keys and values are correct
+# For example:
+#    javax.naming.factory.initial=Initial_Context_Factory (can be jndi/ldap/fs context..)
+#    javax.naming.provider.url=REMOTE_URL_ENDPOINT or bindings file
+#    javax.naming.security.principal=USERNAME
+#    javax.naming.security.credentials=PASSWORD
+#
+#
+
+ForeignJMS-1:
+  name: TestForeignJms
+  initialContextFactory: weblogic.jndi.WLInitialContextFactory
+  #Provide all the related jndi connection, properties info.. under properties rather than individual entries
+  jndiProperties: javax.naming.factory.initial=weblogic.jndi.WLInitialContextFactory;javax.naming.provider.url=t3://remoteHost:7001;javax.naming.security.principal=weblogic;javax.naming.security.credentials=weblogic
+  destinations: jms/LocalQueueJNDIName|jms/RemoteQueueJNDIName;jms/LocalTopicJNDIName|jms/RemoteTopicJNDIName
+  cfs: jms/cf/LocalQXACF|jms/cf/RemoteQXACF;jms/cf/LocalTXACF|jms/cf/RemoteTXACF
+

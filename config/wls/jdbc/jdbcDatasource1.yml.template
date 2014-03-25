@@ -1,0 +1,39 @@
+# Configuration for the WebLogic JDBC Datasources
+---
+
+# Each section deals with a subsystem
+# Use | character to provide multiple entries as in jdbc server endpoints
+# ex: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+#
+# For Multipool, only 2 algorithms are supported: Load-Balancing or Failover
+#
+# For xaProtocols, only valid values are:
+# TwoPhaseCommit, LoggingLastResource, EmulateTwoPhaseCommit, OnePhaseCommit, None
+# XA Drivers should be tagged as TwoPhaseCommit
+# Non-XA Drivers can use all the other 4 options (LLR, 1PC, 2PC, None - shortened for brevity)
+
+JDBCDatasource-1:
+  # Is Multipool
+  isMultiDS: true
+  # Use Load-Balancing or Failover
+  mp_algorithm: Load-Balancing
+  # JdbcUrlPrefix is the driver url without the ':@' followed by hostname/port/service data - required for Multipool
+  jdbcUrlPrefix: jdbc:oracle:thin
+  # Use the | pipe character to delimit the various hosts that form the underlying datasources for the multipool
+  jdbcUrlEndpoints: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+  name: MultiDatasource-1
+  jndiName: jdbc/testJDBCDSMulti
+  driver: oracle.jdbc.xa.client.OracleXADataSource
+  username: testUser1
+  password: testPasswd1
+# For xaProtocols, only valid values are:
+# TwoPhaseCommit, LoggingLastResource, EmulateTwoPhaseCommit, OnePhaseCommit, None
+# XA Drivers should be tagged as TwoPhaseCommit
+# Non-XA Drivers can use all the other 4 options (LLR, 1PC, 2PC, None - shortened for brevity)
+  xaProtocol: TwoPhaseCommit
+  initCapacity: 5
+  maxCapacity: 40
+  # Lower the time duration for recreation of connection pool on failure or outage (like 30 seconds)
+  connectionCreationRetryFrequency: 900
+  testSql: SQL SELECT 1 from DUAL
+

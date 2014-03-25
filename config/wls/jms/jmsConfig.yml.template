@@ -1,0 +1,17 @@
+# Configuration for the WebLogic JMS Server
+---
+
+# Each section deals with a subsystem
+# Use ; character to provide multiple entries as in queues, topics or cf entries
+#  ex:   jms/queue/TestQ;com/test/FooQ
+#
+
+
+JMS-1:
+  jmsServer: TestJmsServer-1
+  moduleName: TestJmsMod-1
+  queues: jms/queue/TestQ;com/test/FooQ
+  topics: jms/topic/TestT;com/test/FooT
+  xaCfs: jms/cf/QXACF;jms/cf/TXACF
+  nonXaCfs: jms/cf/QCF;jms/cf/TCF
+

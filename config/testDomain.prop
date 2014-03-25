@@ -1,0 +1,54 @@
+# Each section deals with a subsystem
+# Use | character to provide multiple entries as in jdbc server endpoints
+# ex: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+#     jms/queue/TestQ|com/test/FooQ
+#
+
+[Domain]
+wlsHome=/Users/sparameswaran/workspace/java-buildpack/build/.wlserver/wls12120/wlserver
+serverName=testServer
+serverPort=7070
+domainName=cfDomain
+domainPath=/tmp/user_projects/domains
+wlsUser=weblogic
+wlsPasswd=welcome1
+
+
+[JMS-1]
+jmsServer=TestJmsServer-1
+moduleName=TestJmsMod-1
+queues=jms/queue/TestQ|com/test/FooQ
+topics=jms/topic/TestQ|com/test/FooT
+xaCfs=jms/cf/QXACF|jms/cf/TXACF
+nonXaCfs=jms/cf/QCF|jms/cf/TCF
+
+[JDBCDatasource-1]
+isMultiDS=false
+dbUrl=jdbc:oracle:thin@localhost:1521:orcl
+name=Datasource-1
+jndiName=jdbc/testJDBCDS
+driver=oracle.jdbc.OracleDriver
+user=testUser
+passwd=testPasswd
+xaProtocol=None
+initCapacity=5
+maxCapacity=30
+testSql=SQL SELECT 1 from DUAL
+
+[JDBCDatasource-2]
+isMultiDS=true
+mp_algorithm=Load-Balancing
+dbUrlPrefix=jdbc:oracle:thin@
+dbUrlEndpoints=localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+name=MultiDatasource-1
+jndiName=jdbc/testJDBCDSMultipool
+driver=oracle.jdbc.xa.client.OracleXADataSource
+user=testUser1
+passwd=testPasswd1
+xaProtocol=TwoPhaseCommit
+initCapacity=5
+maxCapacity=40
+testSql=SQL SELECT 1 from DUAL
+
+
+

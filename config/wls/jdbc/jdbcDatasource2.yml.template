@@ -1,0 +1,27 @@
+# Configuration for the WebLogic JDBC Datasources
+---
+
+# Each section deals with a subsystem
+# Use | character to provide multiple entries as in jdbc server endpoints
+# ex: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+#
+
+JDBCDatasource-2:
+  isMultiDS: false
+  jdbcUrl: jdbc:oracle:thin:@localhost:1521:orcl
+  name: Datasource-1
+  jndiName: jdbc/testJDBCDSSingle
+  driver: oracle.jdbc.OracleDriver
+  username: testUser
+  password: testPasswd
+# For xaProtocols, only following values are valid:
+# TwoPhaseCommit, LoggingLastResource, EmulateTwoPhaseCommit, OnePhaseCommit, None
+# XA Drivers should be tagged as TwoPhaseCommit
+# Non-XA Drivers can use all the other 4 options (LLR, 1PC, 2PC, None - shortened for brevity)
+  xaProtocol: None
+  initCapacity: 5
+  maxCapacity: 30
+  # Lower the time duration for recreation of connection pool on failure or outage
+  connectionCreationRetryFrequency: 900
+  testSql: SQL SELECT 1 from DUAL
+

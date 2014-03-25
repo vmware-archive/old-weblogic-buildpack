@@ -1,0 +1,132 @@
+{
+    "cleardb-n/a": [
+        {
+            "credentials": {
+                "hostname": "us-cdbr-east-05.cleardb.net",
+                "jdbcUrl": "jdbc:mysql://b0df19069c8dc9:5563fd18@us-cdbr-east-05.cleardb.net:3306/ad_6f07f9628771ee5",
+                "name": "ad_6f07f9628771ee5",
+                "password": "5563fd18",
+                "port": "3306",
+                "uri": "mysql://b0df19069c8dc9:5563fd18@us-cdbr-east-05.cleardb.net:3306/ad_6f07f9628771ee5?reconnect=true",
+                "username": "b0df19069c8dc9"
+            },
+            "label": "cleardb-n/a",
+            "name": "stsql",
+            "plan": "boost",
+            "tags": [
+                "mysql",
+                "relational"
+            ]
+        },
+        {
+            "credentials": {
+                "hostname": "us-cdbr-east-05.cleardb.net",
+                "jdbcUrl": "jdbc:mysql://b7de36717e4dc9:2ae2dc9d@us-cdbr-east-05.cleardb.net:3306/ad_ff0a983438150d5",
+                "name": "ad_ff0a983438150d5",
+                "password": "2ae2dc9d",
+                "port": "3306",
+                "uri": "mysql://b7de36717e4dc9:2ae2dc9d@us-cdbr-east-05.cleardb.net:3306/ad_ff0a983438150d5?reconnect=true",
+                "username": "b7de36717e4dc9"
+            },
+            "label": "cleardb-n/a",
+            "name": "foodb",
+            "plan": "spark",
+            "tags": [
+                "mysql",
+                "relational"
+            ]
+        }
+    ],
+    "cloudamqp-n/a": [
+        {
+            "credentials": {
+                "uri": "amqp://vgeattcq:yQuTqUfmTnrj6QFWwHN3OxXCJ9V7Q2vX@lemur.cloudamqp.com/vgeattcq"
+            },
+            "label": "cloudamqp-n/a",
+            "name": "stmessaging",
+            "plan": "lemur",
+            "tags": [
+                "amqp",
+                "rabbitmq"
+            ]
+        }
+    ],
+    "elephantsql-n/a": [
+        {
+            "credentials": {
+                "uri": "postgres://kazvureq:9U6DFinHnqeI7_LIjt5dmFBL9FcbYZJ1@babar.elephantsql.com:5432/kazvureq"
+            },
+            "label": "elephantsql-n/a",
+            "name": "testPostGres",
+            "plan": "turtle",
+            "tags": [
+                "postgres",
+                "postgresql",
+                "relational"
+            ]
+        }
+    ],
+    "user-provided": [
+        {
+            "credentials": {
+                "host": "example.com",
+                "password": "adminpw",
+                "port": "1234",
+                "username": "admin"
+            },
+            "label": "user-provided",
+            "name": "fooupsi",
+            "syslog_drain_url": "",
+            "tags": []
+        },
+        {
+            "credentials": {
+                "hostname": "testDbInstance",
+                "loadbalance": "ON",
+                "password": "userPaswd1",
+                "port": "2393",
+                "username": "userTest1"
+            },
+            "label": "user-provided",
+            "name": "testDemoCupsService",
+            "syslog_drain_url": "",
+            "tags": []
+        },
+        {
+            "credentials": {
+                "hostname": "us-east-05.net",
+                "jdbcUrl": "jdbc:oracle:thin@2ae2dc9d@us-east-05.net:1521:ad_ff0a0d5",
+                "password": "2ae9d",
+                "username": "b7dedc9",
+                "initCapacity": 5,
+                "maxCapacity": 30,
+                "jndiName": "jdbc/SinglepoolDS",
+                "driver": "oracle.jdbc.OracleDriver",
+                "connectionCreationRetryFrequency": 900
+            },
+            "label": "oracle",
+            "name": "oracleSingleDS",
+            "tags": []
+        },
+        {
+            "credentials": {
+                "hostname": "us-west-05.net",
+                "jdbcUrlPrefix": "jdbc:oracle:thin",
+                "jdbcUrlEndpoints": "localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3",
+                "password": "2ae9d23",
+                "username": "b7de4dc9",
+                "initCapacity": 1,
+                "maxCapacity": 4,
+                "isMultiDS": "true",
+                "xaProtocol": "TwoPhaseCommit",
+                "mp_algorithm": "Load-Balancing",
+                "jndiName": "jdbc/MultipoolDS",
+                "driver": "oracle.jdbc.xa.client.OracleXADataSource",
+                "connectionCreationRetryFrequency": 600
+            },
+            "label": "oracle",
+            "name": "oracleMultiPoolDS",
+            "tags": []
+        }
+    ]
+}

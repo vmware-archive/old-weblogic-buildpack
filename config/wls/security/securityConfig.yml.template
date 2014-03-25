@@ -1,0 +1,10 @@
+# Configuration for the WebLogic security
+---
+
+# Each section deals with a subsystem
+# Use | character to provide multiple entries as in jdbc server endpoints
+# ex: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+#     jms/queue/TestQ|com/test/FooQ
+#
+
+# Nothing to add or modify from security outside of basic domain config
