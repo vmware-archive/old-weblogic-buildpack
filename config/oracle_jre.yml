@@ -19,10 +19,10 @@
 # e.g.  repository_root: "http://example.com/oracle-jre/{platform}/{architecture}"
 repository_root: "http://12.1.1.1:7001/fileserver/jdk"
 version: 1.7.0_+
-memory_sizes:
-  permgen: 64m..
+#memory_sizes:
+#  permgen: 128m..256m
 memory_heuristics:
   heap: 75
-  permgen: 10
+  permgen: 15
   stack: 5
   native: 10

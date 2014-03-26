@@ -1,0 +1,14 @@
+# Configuration for the WebLogic Domain
+---
+
+# Need serverName, domainName, user and password filled in
+#
+
+
+Domain:
+  serverName: testServer
+  domainName: cfDomain
+  wlsUser: weblogic
+  wlsPasswd: welcome1
+  consoleEnabled: true
+  prodModeEnabled: false

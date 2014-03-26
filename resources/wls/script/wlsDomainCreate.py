@@ -35,9 +35,17 @@ def loadGlobalProp(domainConfig):
    global WL_HOME, SERVER_NAME, DOMAIN, DOMAIN_PATH, DOMAIN_NAME
 
    WL_HOME     = str(domainConfig.get('wlsHome'))
-   SERVER_NAME = str(domainConfig.get('serverName'))
-   DOMAIN_NAME = str(domainConfig.get('domainName'))
    DOMAIN_PATH = str(domainConfig.get('domainPath'))
+
+   SERVER_NAME = 'myserver'
+   DOMAIN_NAME = 'cfDomain'
+
+   if 'serverName' in domainConfig:
+    SERVER_NAME = str(domainConfig.get('serverName'))
+
+   if 'domainName' in domainConfig:
+      DOMAIN_NAME = str(domainConfig.get('domainName'))
+
    DOMAIN      = DOMAIN_PATH + '/' + DOMAIN_NAME
 
 
@@ -393,18 +401,27 @@ def createDomain(domainEnvConfig):
 
   log=create(SERVER_NAME, 'Log')
   cd('Log/'+SERVER_NAME)
-  set('StdoutSeverity', 'Info')
+  set('StdoutSeverity', 'Debug')
   set('LoggerSeverity', 'Debug')
   set('RedirectStdoutToServerLogEnabled', 'true')
 
   cd('/')
   cd('Security/base_domain/User/weblogic')
-  set('Name', domainEnvConfig.get('wlsUser'))
-  cmo.setPassword(domainEnvConfig.get('wlsPasswd'))
+
+  if 'wlsUser' in domainEnvConfig:
+    set('Name', domainEnvConfig.get('wlsUser'))
+
+  if 'wlsPasswd' in domainEnvConfig:
+    cmo.setPassword(domainEnvConfig.get('wlsPasswd'))
+  else:
+    cmo.setPassword('welcome1')
+
 
   cd('/')
-  set('ConsoleEnabled', domainEnvConfig.get('consoleEnabled'))
-  set('ProductionModeEnabled', domainEnvConfig.get('prodModeEnabled'))
+  if 'consoleEnabled' in domainEnvConfig:
+    set('ConsoleEnabled', domainEnvConfig.get('consoleEnabled'))
+  if 'prodModeEnabled' in domainEnvConfig:
+    set('ProductionModeEnabled', domainEnvConfig.get('prodModeEnabled'))
 
   setOption('OverwriteDomain', 'true')
   writeDomain(DOMAIN)

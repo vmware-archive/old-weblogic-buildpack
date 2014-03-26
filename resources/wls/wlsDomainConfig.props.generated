@@ -7,11 +7,9 @@ wlsUser=weblogic
 wlsPasswd=welcome1
 consoleEnabled=true
 prodModeEnabled=false
-############ WARNING!!! ##############
-# Don't edit the following two entries
 wlsHome=/Users/sparameswaran/workspace/java-buildpack/build/.java-buildpack/weblogic/wls12120/wlserver
 domainPath=/Users/sparameswaran/workspace/java-buildpack/build/.java-buildpack/weblogic/user_projects/domains/
-############ WARNING!!! ##############
+
 [JMS-1]
 jmsServer=TestJmsServer-1
 moduleName=TestJmsMod-1

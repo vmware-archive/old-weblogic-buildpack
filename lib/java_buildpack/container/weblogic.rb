@@ -164,26 +164,21 @@ module JavaBuildpack::Container
       # For now, expecting only one script to be run to create the domain
       @wlsDomainConfigScript    = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
 
-      # Expect only one server instance to run, so there can be only one jvm config
-      @wlsJvmConfigFile         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
 
       # There can be multiple service definitions ()for JDBC, JMS, Foreign JMS services)
       wlsJmsConfigFiles        = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JMS_CONFIG_DIR}/*.yml")
       wlsJdbcConfigFiles       = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JDBC_CONFIG_DIR}/*.yml")
       wlsForeignJmsConfigFile  = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_FOREIGN_JMS_CONFIG_DIR}/*.yml")
 
-      @wlsCompleteDomainConfigsYml = [@wlsDomainYamlConfigFile, @wlsJvmConfigFile ]
+      @wlsCompleteDomainConfigsYml = [@wlsDomainYamlConfigFile ]
+      @wlsCompleteDomainConfigsYml +=  [ @wlsJvmConfigFile ] if !@wlsJvmConfigFile.nil?
       @wlsCompleteDomainConfigsYml +=  wlsJdbcConfigFiles + wlsJmsConfigFiles + wlsForeignJmsConfigFile
 
       logger.debug { "Configuration files packaged with App: #{@wlsCompleteDomainConfigsYml}" }
 
       domainConfiguration = YAML.load_file(@wlsDomainYamlConfigFile)
-      jvmConfiguration = YAML.load_file(@wlsJvmConfigFile)
 
-      logger.debug { "WLS Domain Configuration: #{@wlsDomainYamlConfigFile}: #{domainConfiguration}" } if should_log
-      logger.debug { "WLS JVM Configuration: #{@wlsJvmConfigFile}: #{jvmConfiguration}" } if should_log
-
-      @jvmConfig    = jvmConfiguration["JVM"]
+      logger.debug { "WLS Domain Configuration: #{@wlsDomainYamlConfigFile}: #{domainConfiguration}" }
       @domainConfig = domainConfiguration["Domain"]
 
       @domainName   = @domainConfig['domainName']
@@ -210,28 +205,48 @@ module JavaBuildpack::Container
 
     def setupJvmArgs
 
-      minPermSize = @jvmConfig['minPermSize']
-      maxPermSize = @jvmConfig['maxPermSize']
-      logger.debug { "Jvm config passed with App: #{@jvmConfig.to_s}" }
+      minPermSize = 128
+      maxPermSize = 256
+      minHeapSize = 512
+      maxHeapSize = 1024
+      otherJvmOpts = " -verbose:gc -Xloggc:gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps "
 
-      # Set Default Min and Max Heap Size for WLS
-      minHeapSize  = @jvmConfig['minHeap']
-      maxHeapSize  = @jvmConfig['maxHeap']
-      otherJvmOpts = @jvmConfig['otherJvmOpts']
+      # Expect only one server instance to run, so there can be only one jvm config
+      @wlsJvmConfigFile         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
 
-      logger.debug { "Jvm config passed via droplet java_opts : #{@droplet.java_opts.to_s}" }
+      if !@wlsJvmConfigFile.nil?
+
+        jvmConfiguration = YAML.load_file(@wlsJvmConfigFile)
+        logger.debug { "WLS JVM Configuration: #{@wlsJvmConfigFile}: contents #{jvmConfiguration}" }
+
+        @jvmConfig    = jvmConfiguration["JVM"]
+
+        minPermSize = @jvmConfig['minPermSize']
+        maxPermSize = @jvmConfig['maxPermSize']
+        logger.debug { "JVM config passed with App: #{@jvmConfig.to_s}" }
+
+        # Set Default Min and Max Heap Size for WLS
+        minHeapSize  = @jvmConfig['minHeap']
+        maxHeapSize  = @jvmConfig['maxHeap']
+        otherJvmOpts = @jvmConfig['otherJvmOpts']
+
+      end
+
+      logger.debug { "JVM config passed via droplet java_opts : #{@droplet.java_opts.to_s}" }
       javaOptTokens = @droplet.java_opts.join(' ').split
 
       javaOptTokens.each { |token|
 
         if token[/-XX:PermSize/]
           minPermSize = token[/[0-9]+/].to_i
+          puts "java_opts minPermSize: #{minPermSize}"
           # Convert to MBs
           minPermSize = (minPermSize / 1024) if (minPermSize > 20480)
           minPermSize = 128 if (minPermSize < 128)
 
         elsif token[/-XX:MaxPermSize/]
           maxPermSize = token[/[0-9]+/].to_i
+          puts "java_opts maxPermSize: #{maxPermSize}"
 
           # Convert to MBs
           maxPermSize = (maxPermSize / 1024) if (maxPermSize > 20480)
@@ -319,6 +334,9 @@ module JavaBuildpack::Container
         @wlsInstall = File.dirname(configureScript)
         @wlsHome = Dir.glob("#{@wlsInstall}/wlserver*")[0].to_s
 
+        # Now add or update the Domain path and Wls Home inside the wlsDomainYamlConfigFile
+        updateDomainConfigFile(@wlsDomainYamlConfigFile)
+
         logger.debug { "Configurations for Java WLS Buildpack" }
         logger.debug { "--------------------------------------" }
         logger.debug { "  Sandbox Root  : #{@wlsSandboxRoot} " }
@@ -336,14 +354,33 @@ module JavaBuildpack::Container
 
         logger.debug { "Running configure script!!" }
 
-        system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
+
 
         # Use this while running on Mac to pick the correct JDK location
-        #p "Warning!!! Using hardcoded java path to point to Mac specific Java binary rather than linux binary!!...."
-        #system "export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
+        if mac?
+
+          puts "Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!"
+          puts "Trying to find local java instance on Mac"
+
+          logger.debug { "Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!" }
+          logger.debug { "Trying to find local java instance on Mac" }
+
+          javaBinaryLocations = Dir.glob("/Library/Java/JavaVirtualMachines/**/" + JAVA_BINARY)
+          javaBinaryLocations.each { |javaBinaryCandidate|
+
+            # The full installs have $JAVA_HOME/jre/bin/java path
+            @javaHome =  File.dirname(javaBinaryCandidate) + "/.." if javaBinaryCandidate[/jdk1.7/]
+          }
+          puts "Warning!!! Using JAVA_HOME at #{@javaHome} "
+          logger.debug { "Warning!!! Using JAVA_HOME at #{@javaHome}" }
+
+        end
+
+        system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
+
+
 
         logger.debug { "Finished running configure script!!" }
-        #system "/bin/cat #{@wlsInstall}/configureRun.log"
 
         # Modify WLS commEnv Script to use -server rather than -client
         modifyJvmTypeInCommEnv()
@@ -358,9 +395,6 @@ module JavaBuildpack::Container
         logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
         logger.debug { "--------------------------------------" }
 
-
-        # Update the placeholders in the generated props file before running WLST
-        updateWLSTInputFile( @wlsCompleteDomainConfigsProps, true)
 
         # Run wlst.sh to generate the domain as per the requested configurations
 
@@ -400,18 +434,6 @@ module JavaBuildpack::Container
       }
     end
 
-    def linkJarsToDomain()
-
-      @wlsPreClasspathJars         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR}/*")
-      @wlsPostClasspathJars        = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR}/*")
-
-      logger.debug { "Linking pre and post jar directories relative to the Domain" }
-
-      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR} #{@domainHome}/#{WLS_PRE_JARS_CACHE_DIR}"
-      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR} #{@domainHome}/#{WLS_POST_JARS_CACHE_DIR}"
-
-    end
-
     def wlsDomain
       @domainHome
     end
@@ -441,20 +463,23 @@ module JavaBuildpack::Container
     end
 
 
-    def updateWLSTInputFile(wlsPropsConfigFile, should_log = true)
+    def updateDomainConfigFile(wlsDomainConfigFile)
 
-      # Now replace the wls and domain locations with actual paths calculated as per the build
-      # Variables to replace are WLS_HOME_PLACEHOLDER and DOMAIN_PATH_PLACEHOLDER
 
-      original = File.open(wlsPropsConfigFile, 'r') { |f| f.read }
-      modified = original.gsub(/WLS_HOME_PLACEHOLDER/, @wlsHome.to_s)
-      modified = modified.gsub(/DOMAIN_PATH_PLACEHOLDER/, @wlsDomainPath.to_s)
-      modified = modified.gsub(/APP_PATH_PLACEHOLDER/, @wlsAppPath.to_s)
+      original = File.open(wlsDomainConfigFile, 'r') { |f| f.read }
 
-      File.open(wlsPropsConfigFile, 'w') { |f| f.write modified }
+      # Remove any existing references to wlsHome or domainPath
+      modified = original.gsub(/  wlsHome.*$/, "")
+      modified = modified.gsub(/  domainPath.*$/, "")
 
-      logger.debug { "Modified placeholder for WLS_HOME to point to #{@wlsHome} in generated props file" }
-      logger.debug { "Modified placeholder for DOMAIN_PATH to point to #{@wlsDomainPath} in generated props file" }
+      # Add new references to wlsHome and domainPath
+      modified << "  wlsHome: #{@wlsHome.to_s}\n"
+      modified << "  domainPath: #{@wlsDomainPath.to_s}\n"
+
+      File.open(wlsDomainConfigFile, 'w') { |f| f.write modified }
+
+      logger.debug { "Added entry for WLS_HOME to point to #{@wlsHome} in domain config file" }
+      logger.debug { "Added entry for DOMAIN_PATH to point to #{@wlsDomainPath} in domain config file" }
 
     end
 
@@ -479,6 +504,18 @@ module JavaBuildpack::Container
       }
 
       logger.debug { "Modified commEnv.sh files to use -server vm" }
+
+    end
+
+    def linkJarsToDomain()
+
+      @wlsPreClasspathJars         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR}/*")
+      @wlsPostClasspathJars        = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR}/*")
+
+      logger.debug { "Linking pre and post jar directories relative to the Domain" }
+
+      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR} #{@domainHome}/#{WLS_PRE_JARS_CACHE_DIR} 2>/dev/null"
+      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR} #{@domainHome}/#{WLS_POST_JARS_CACHE_DIR} 2>/dev/null"
 
     end
 
@@ -565,6 +602,21 @@ module JavaBuildpack::Container
       #File.open(standalone_config, 'w') { |f| f.write modified }
     end
 
+    def windows?
+      (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def mac?
+      (/darwin/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def unix?
+      !OS.windows?
+    end
+
+    def linux?
+      OS.unix? and not OS.mac?
+    end
 
   end
 
