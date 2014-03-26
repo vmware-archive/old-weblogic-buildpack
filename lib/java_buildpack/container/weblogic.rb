@@ -72,6 +72,7 @@ module JavaBuildpack::Container
     def compile
 
       download_wls
+      configure
       link_to(@application.root.children, root)
       @droplet.additional_libraries.link_to web_inf_lib
       create_dodeploy
@@ -131,7 +132,7 @@ module JavaBuildpack::Container
     WLS_FOREIGN_JMS_CONFIG_DIR  = 'foreignjms'.freeze
     WLS_PRE_JARS_CACHE_DIR      = 'preJars'.freeze
     WLS_POST_JARS_CACHE_DIR     = 'postJars'.freeze
-    WLS_AUTODEPLOY              = 'autodeploy'.freeze
+    ROOT_APP_LOC                = 'app'.freeze
 
     WLS_SERVER_START_SCRIPT     = 'startWebLogic.sh'.freeze
     WLS_COMMON_ENV_SCRIPT       = 'commEnv.sh'.freeze
@@ -153,7 +154,6 @@ module JavaBuildpack::Container
     # Loads a configuration file from the application's wls configuration directory.  If the configuration file does not exist,
     # returns an empty hash.
     #
-    # @param [String] identifier the identifier of the configuration
     # @param [Boolean] should_log whether the contents of the configuration file should be logged.  This value should be
     #                             left to its default and exists to allow the logger to use the utility.
     # @return [Hash] the configuration or an empty hash if the configuration file does not exist
@@ -183,7 +183,7 @@ module JavaBuildpack::Container
 
       @domainName   = @domainConfig['domainName']
       @domainHome   = @wlsDomainPath + @domainName
-      @wlsAppPath   = @domainHome + WLS_AUTODEPLOY
+      @wlsAppPath   = @domainHome + ROOT_APP_LOC
 
       # Filtered Pathname has a problem with non-existing files
       # It checks for their existence. So, get the path as string and add the props file name for the output file
@@ -239,15 +239,13 @@ module JavaBuildpack::Container
 
         if token[/-XX:PermSize/]
           minPermSize = token[/[0-9]+/].to_i
-          puts "java_opts minPermSize: #{minPermSize}"
+
           # Convert to MBs
           minPermSize = (minPermSize / 1024) if (minPermSize > 20480)
           minPermSize = 128 if (minPermSize < 128)
 
         elsif token[/-XX:MaxPermSize/]
           maxPermSize = token[/[0-9]+/].to_i
-          puts "java_opts maxPermSize: #{maxPermSize}"
-
           # Convert to MBs
           maxPermSize = (maxPermSize / 1024) if (maxPermSize > 20480)
           maxPermSize = 256 if (maxPermSize < 128)
@@ -315,100 +313,104 @@ module JavaBuildpack::Container
     def expand(file)
       expand_start_time = Time.now
 
-      with_timing "Expanding WebLogic to #{@droplet.sandbox.relative_path_from(@droplet.root)}\n" do
+      print "-----> Expanding WebLogic to #{@droplet.sandbox.relative_path_from(@droplet.root)}\n"
 
-        FileUtils.rm_rf @wlsSandboxRoot
-        FileUtils.mkdir_p @wlsSandboxRoot
+      FileUtils.rm_rf @wlsSandboxRoot
+      FileUtils.mkdir_p @wlsSandboxRoot
 
-        #unzip_file(file.path, @wlsSandboxRoot)
-        system "/usr/bin/unzip #{file.path} -d #{@wlsSandboxRoot} >/dev/null"
-
-        javaBinary      = Dir.glob("#{@wlsSandboxRoot}" + "/../**/" + JAVA_BINARY)[0]
-        configureScript = Dir.glob("#{@wlsSandboxRoot}" + "/**/" + WLS_CONFIGURE_SCRIPT)[0]
-
-        logger.debug { "Java Binary is located at : #{javaBinary}" }
-        logger.debug { "WLS configure script is located at : #{configureScript}" }
-        logger.debug { "Application is located at : #{@application.root}" }
-
-        @javaHome = File.dirname(javaBinary) + "/.."
-        @wlsInstall = File.dirname(configureScript)
-        @wlsHome = Dir.glob("#{@wlsInstall}/wlserver*")[0].to_s
-
-        # Now add or update the Domain path and Wls Home inside the wlsDomainYamlConfigFile
-        updateDomainConfigFile(@wlsDomainYamlConfigFile)
-
-        logger.debug { "Configurations for Java WLS Buildpack" }
-        logger.debug { "--------------------------------------" }
-        logger.debug { "  Sandbox Root  : #{@wlsSandboxRoot} " }
-        logger.debug { "  JAVA_HOME     : #{@javaHome} " }
-        logger.debug { "  WLS_INSTALL   : #{@wlsInstall} "}
-        logger.debug { "  WLS_HOME      : #{@wlsHome}" }
-        logger.debug { "  DOMAIN HOME   : #{@domainHome}" }
-        logger.debug { "--------------------------------------" }
-
-
-        system "/bin/chmod +x #{configureScript}"
-
-        # Run configure.sh so the actual files are unpacked fully and paths are configured correctly
-        # Need to use pipeline as we need to provide inputs to scripts downstream
-
-        logger.debug { "Running configure script!!" }
-
-
-
-        # Use this while running on Mac to pick the correct JDK location
-        if mac?
-
-          puts "Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!"
-          puts "Trying to find local java instance on Mac"
-
-          logger.debug { "Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!" }
-          logger.debug { "Trying to find local java instance on Mac" }
-
-          javaBinaryLocations = Dir.glob("/Library/Java/JavaVirtualMachines/**/" + JAVA_BINARY)
-          javaBinaryLocations.each { |javaBinaryCandidate|
-
-            # The full installs have $JAVA_HOME/jre/bin/java path
-            @javaHome =  File.dirname(javaBinaryCandidate) + "/.." if javaBinaryCandidate[/jdk1.7/]
-          }
-          puts "Warning!!! Using JAVA_HOME at #{@javaHome} "
-          logger.debug { "Warning!!! Using JAVA_HOME at #{@javaHome}" }
-
-        end
-
-        system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
-
-
-
-        logger.debug { "Finished running configure script!!" }
-
-        # Modify WLS commEnv Script to use -server rather than -client
-        modifyJvmTypeInCommEnv()
-
-
-        # Consolidate all the user defined service definitions provided via the app,
-        # along with anything else that comes via the Service Bindings via the environment (VCAP_SERVICES) during staging/execution of the droplet.
-
-        system "/bin/rm  #{@wlsCompleteDomainConfigsProps} 2>/dev/null"
-        JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, @wlsConfigCacheRoot, @wlsCompleteDomainConfigsProps)
-        JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
-        logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
-        logger.debug { "--------------------------------------" }
-
-
-        # Run wlst.sh to generate the domain as per the requested configurations
-
-        wlstScript = Dir.glob("#{@wlsInstall}" + "/**/wlst.sh")[0]
-        system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps}  > #{@wlsInstall}/wlstDomainCreation.log"
-
-        logger.debug { "WLST finished generating domain. Log file saved at: #{@wlsInstall}/wlstDomainCreation.log" }
-
-        linkJarsToDomain
-
-      end
+      #unzip_file(file.path, @wlsSandboxRoot)
+      system "/usr/bin/unzip #{file.path} -d #{@wlsSandboxRoot} >/dev/null"
 
       puts "(#{(Time.now - expand_start_time).duration})"
     end
+
+    def configure()
+      configure_start_time = Time.now
+
+      print "-----> Configuring WebLogic under #{@wlsSandboxRoot.relative_path_from(@droplet.root)}\n"
+
+
+      javaBinary      = Dir.glob("#{@wlsSandboxRoot}" + "/../**/" + JAVA_BINARY)[0]
+      configureScript = Dir.glob("#{@wlsSandboxRoot}" + "/**/" + WLS_CONFIGURE_SCRIPT)[0]
+
+      logger.debug { "Java Binary is located at : #{javaBinary}" }
+      logger.debug { "WLS configure script is located at : #{configureScript}" }
+      logger.debug { "Application is located at : #{@application.root}" }
+
+      @javaHome = File.dirname(javaBinary) + "/.."
+      @wlsInstall = File.dirname(configureScript)
+      @wlsHome = Dir.glob("#{@wlsInstall}/wlserver*")[0].to_s
+
+      # Now add or update the Domain path and Wls Home inside the wlsDomainYamlConfigFile
+      updateDomainConfigFile(@wlsDomainYamlConfigFile)
+
+      logger.debug { "Configurations for Java WLS Buildpack" }
+      logger.debug { "--------------------------------------" }
+      logger.debug { "  Sandbox Root  : #{@wlsSandboxRoot} " }
+      logger.debug { "  JAVA_HOME     : #{@javaHome} " }
+      logger.debug { "  WLS_INSTALL   : #{@wlsInstall} "}
+      logger.debug { "  WLS_HOME      : #{@wlsHome}" }
+      logger.debug { "  DOMAIN HOME   : #{@domainHome}" }
+      logger.debug { "--------------------------------------" }
+
+
+      system "/bin/chmod +x #{configureScript}"
+
+      # Run configure.sh so the actual files are unpacked fully and paths are configured correctly
+      # Need to use pipeline as we need to provide inputs to scripts downstream
+
+      logger.debug { "Running configure script!!" }
+
+      # Use this while running on Mac to pick the correct JDK location
+      if mac?
+
+        print "       Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!\n"
+        print "       Trying to find local java instance on Mac\n"
+
+        logger.debug { "Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!" }
+        logger.debug { "Trying to find local java instance on Mac" }
+
+        javaBinaryLocations = Dir.glob("/Library/Java/JavaVirtualMachines/**/" + JAVA_BINARY)
+        javaBinaryLocations.each { |javaBinaryCandidate|
+
+          # The full installs have $JAVA_HOME/jre/bin/java path
+          @javaHome =  File.dirname(javaBinaryCandidate) + "/.." if javaBinaryCandidate[/jdk1.7/]
+        }
+        print "       Warning!!! Using JAVA_HOME at #{@javaHome} \n"
+        logger.debug { "Warning!!! Using JAVA_HOME at #{@javaHome}" }
+
+      end
+
+      system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
+      logger.debug { "Finished running configure script, output saved at #{@wlsInstall}/configureRun.log" }
+
+      # Modify WLS commEnv Script to use -server rather than -client
+      modifyJvmTypeInCommEnv()
+
+
+      # Consolidate all the user defined service definitions provided via the app,
+      # along with anything else that comes via the Service Bindings via the environment (VCAP_SERVICES) during staging/execution of the droplet.
+
+      system "/bin/rm  #{@wlsCompleteDomainConfigsProps} 2>/dev/null"
+      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, @wlsConfigCacheRoot, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
+      logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
+      logger.debug { "--------------------------------------" }
+
+
+      # Run wlst.sh to generate the domain as per the requested configurations
+
+      wlstScript = Dir.glob("#{@wlsInstall}" + "/**/wlst.sh")[0]
+      system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps}  > #{@wlsInstall}/wlstDomainCreation.log"
+
+      logger.debug { "WLST finished generating domain. Log file saved at: #{@wlsInstall}/wlstDomainCreation.log" }
+
+      linkJarsToDomain
+
+      print "-----> Finished configuring WebLogic Domain under #{@domainHome.relative_path_from(@droplet.root)}\n"
+      puts "(#{(Time.now - configure_start_time).duration})"
+    end
+
 
     def testServiceBindingParsing()
 
@@ -469,8 +471,8 @@ module JavaBuildpack::Container
       original = File.open(wlsDomainConfigFile, 'r') { |f| f.read }
 
       # Remove any existing references to wlsHome or domainPath
-      modified = original.gsub(/  wlsHome.*$/, "")
-      modified = modified.gsub(/  domainPath.*$/, "")
+      modified = original.gsub(/  wlsHome:.*$\n/, "")
+      modified = modified.gsub(/  domainPath:.*$\n/, "")
 
       # Add new references to wlsHome and domainPath
       modified << "  wlsHome: #{@wlsHome.to_s}\n"
@@ -499,7 +501,7 @@ module JavaBuildpack::Container
       Dir.glob("#{@wlsInstall}/**/commEnv.sh").each { |commEnvScript|
 
         original = File.open(commEnvScript, 'r') { |f| f.read }
-        modified = original.gsub(/CLIENT_VM/, SERVER_VM)
+        modified = original.gsub(/#{CLIENT_VM}/, SERVER_VM)
         File.open(commEnvScript, 'w') { |f| f.write modified }
       }
 
