@@ -34,17 +34,24 @@ module JavaBuildpack::Container
     def initialize(context)
       super(context)
 
+
+
       if supports?
         @wls_version, @wls_uri = JavaBuildpack::Repository::ConfiguredItem
         .find_item(@component_name, @configuration) { |candidate_version| candidate_version.check_size(3) }
 
-        @wlsSandboxRoot     = @droplet.sandbox
-        @wlsDomainPath      = @wlsSandboxRoot + WLS_DOMAIN_PATH
-        @wlsConfigCacheRoot = @application.root + WLS_CONFIG_CACHE_DIR
-        @appServicesConfig  = @application.services
+
+        @preferAppConfig = @configuration[PREFER_APP_CONFIG]
+
+        @wlsSandboxRoot           = @droplet.sandbox
+        @wlsDomainPath            = @wlsSandboxRoot + WLS_DOMAIN_PATH
+        @appConfigCacheRoot       = @application.root + APP_WLS_CONFIG_CACHE_DIR
+        @appServicesConfig        = @application.services
+
+        # Root of Buildpack bundled config cache - points to <weblogic-buildpack>/resources/wls
+        @buildpackConfigCacheRoot = BUILDPACK_WLS_CONFIG_CACHE_DIR
 
         load()
-        setupJvmArgs()
 
       else
         @wls_version, @wls_uri       = nil, nil
@@ -56,8 +63,8 @@ module JavaBuildpack::Container
 
     # @macro base_component_detect
     def detect
-      if @wls_version # && @lifecycle_version && @logging_version
-        [wls_id(@wls_version)]#  lifecycle_id(@lifecycle_version), logging_id(@logging_version)]
+      if @wls_version
+        [wls_id(@wls_version)]
       else
         nil
       end
@@ -79,6 +86,9 @@ module JavaBuildpack::Container
     end
 
     def release
+
+      setupJvmArgs
+      createSetupEnvAndLinksScript
 
       [
           @droplet.java_home.as_env_var,
@@ -115,14 +125,15 @@ module JavaBuildpack::Container
 
     private
 
-    SERVER_VM                = '-server'.freeze
-    CLIENT_VM                = '-client'.freeze
-    WEB_INF_DIRECTORY        = 'WEB-INF'.freeze
-    JAVA_BINARY              = 'java'.freeze
 
+    # Expect to see a '.wls' folder containing domain configurations and script to create the domain within the App bits
+    APP_WLS_CONFIG_CACHE_DIR       = '.wls'.freeze
 
-    # Expect to see a '.wls' folder containing domain configurations and script to create the domain
-    WLS_CONFIG_CACHE_DIR        = '.wls'.freeze
+    # Default WebLogic Configurations packaged within the buildpack
+    BUILDPACK_WLS_CONFIG_CACHE_DIR = Pathname.new(File.expand_path('../../../resources/wls', File.dirname(__FILE__))).freeze
+
+    # Prefer App Bundled Config or Buildpack bundled Config
+    PREFER_APP_CONFIG           = 'preferAppConfig'.freeze
 
     # Following are relative to the .wls folder all under the APP ROOT
     WLS_SCRIPT_CACHE_DIR        = 'script'.freeze
@@ -132,7 +143,9 @@ module JavaBuildpack::Container
     WLS_FOREIGN_JMS_CONFIG_DIR  = 'foreignjms'.freeze
     WLS_PRE_JARS_CACHE_DIR      = 'preJars'.freeze
     WLS_POST_JARS_CACHE_DIR     = 'postJars'.freeze
-    ROOT_APP_LOC                = 'app'.freeze
+
+    # Location to save/store the application during deployment
+    ROOT_APPS_LOC               = 'apps'.freeze
 
     WLS_SERVER_START_SCRIPT     = 'startWebLogic.sh'.freeze
     WLS_COMMON_ENV_SCRIPT       = 'commEnv.sh'.freeze
@@ -144,6 +157,14 @@ module JavaBuildpack::Container
     # WLS_DOMAIN_PATH is relative to sandbox
     WLS_DOMAIN_PATH          = 'domains/'.freeze
 
+    # Other constants
+    SERVER_VM                = '-server'.freeze
+    CLIENT_VM                = '-client'.freeze
+    WEB_INF_DIRECTORY        = 'WEB-INF'.freeze
+    JAVA_BINARY              = 'java'.freeze
+
+
+
     #WLS_DOMAIN_CONFIG_YAML   = 'wlsDomainConfig.yml'.freeze
     #WLS_DOMAIN_CONFIG_PROPS  = 'wlsDomainConfig.props'.freeze
     #WLS_DOMAIN_CONFIG_SCRIPT = 'wlsDomainCreate.py'.freeze
@@ -151,43 +172,46 @@ module JavaBuildpack::Container
     #CONFIG_CACHE_DIRECTORY = Pathname.new(File.expand_path('../../../config', File.dirname(__FILE__))).freeze
     #CONFIG_CACHE_DIRECTORY = Pathname.new(@application.root).freeze
 
-    # Loads a configuration file from the application's wls configuration directory.  If the configuration file does not exist,
-    # returns an empty hash.
-    #
-    # @param [Boolean] should_log whether the contents of the configuration file should be logged.  This value should be
-    #                             left to its default and exists to allow the logger to use the utility.
     # @return [Hash] the configuration or an empty hash if the configuration file does not exist
     def load(should_log = true)
 
-      @wlsDomainYamlConfigFile  = Dir.glob("#{@wlsConfigCacheRoot}/*.yml")[0]
+      # Determine the configs that should be used to drive the domain creation.
+      # Can be the App bundled configs
+      # or the buildpack bundled configs
 
-      # For now, expecting only one script to be run to create the domain
-      @wlsDomainConfigScript    = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
+      # During development when the domain structure is still in flux, use App bundled config to test/tweak the domain.
+      # Once the domain structure is finalized, save the configs as part of the buildpack and then only pass along the bare bones domain config and jvm config.
+      # Ignore the rest of the app configs.
 
+      configCacheRoot = determineConfigCacheLocation
 
-      # There can be multiple service definitions ()for JDBC, JMS, Foreign JMS services)
-      wlsJmsConfigFiles        = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JMS_CONFIG_DIR}/*.yml")
-      wlsJdbcConfigFiles       = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JDBC_CONFIG_DIR}/*.yml")
-      wlsForeignJmsConfigFile  = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_FOREIGN_JMS_CONFIG_DIR}/*.yml")
-
-      @wlsCompleteDomainConfigsYml = [@wlsDomainYamlConfigFile ]
-      @wlsCompleteDomainConfigsYml +=  [ @wlsJvmConfigFile ] if !@wlsJvmConfigFile.nil?
-      @wlsCompleteDomainConfigsYml +=  wlsJdbcConfigFiles + wlsJmsConfigFiles + wlsForeignJmsConfigFile
-
-      logger.debug { "Configuration files packaged with App: #{@wlsCompleteDomainConfigsYml}" }
-
-      domainConfiguration = YAML.load_file(@wlsDomainYamlConfigFile)
-
+      @wlsDomainYamlConfigFile  = Dir.glob("#{@appConfigCacheRoot}/*.yml")[0]
+      domainConfiguration       = YAML.load_file(@wlsDomainYamlConfigFile)
       logger.debug { "WLS Domain Configuration: #{@wlsDomainYamlConfigFile}: #{domainConfiguration}" }
-      @domainConfig = domainConfiguration["Domain"]
 
+      @domainConfig = domainConfiguration["Domain"]
       @domainName   = @domainConfig['domainName']
       @domainHome   = @wlsDomainPath + @domainName
-      @wlsAppPath   = @domainHome + ROOT_APP_LOC
+      @wlsAppPath   = @domainHome + ROOT_APPS_LOC
+
+      # There can be multiple service definitions (for JDBC, JMS, Foreign JMS services)
+      # Based on chosen config location, load the related files
+
+      wlsJmsConfigFiles        = Dir.glob("#{configCacheRoot}/#{WLS_JMS_CONFIG_DIR}/*.yml")
+      wlsJdbcConfigFiles       = Dir.glob("#{configCacheRoot}/#{WLS_JDBC_CONFIG_DIR}/*.yml")
+      wlsForeignJmsConfigFile  = Dir.glob("#{configCacheRoot}/#{WLS_FOREIGN_JMS_CONFIG_DIR}/*.yml")
+
+      @wlsCompleteDomainConfigsYml = [@wlsDomainYamlConfigFile ]
+      @wlsCompleteDomainConfigsYml +=  wlsJdbcConfigFiles + wlsJmsConfigFiles + wlsForeignJmsConfigFile
+
+      logger.debug { "Configuration files used for Domain creation: #{@wlsCompleteDomainConfigsYml}" }
 
       # Filtered Pathname has a problem with non-existing files
       # It checks for their existence. So, get the path as string and add the props file name for the output file
       @wlsCompleteDomainConfigsProps     = @wlsDomainYamlConfigFile.to_s.sub(".yml", ".props")
+
+      # For now, expecting only one script to be run to create the domain
+      @wlsDomainConfigScript    = Dir.glob("#{configCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
 
       logger.debug { "Configurations for WLS Domain" }
       logger.debug { "--------------------------------------" }
@@ -203,6 +227,8 @@ module JavaBuildpack::Container
       domainConfiguration || {}
     end
 
+    # Load the app bundled configurations and re-configure as needed the JVM parameters for the Server VM
+    # @return [Hash] the configuration or an empty hash if the configuration file does not exist
     def setupJvmArgs
 
       minPermSize = 128
@@ -212,7 +238,7 @@ module JavaBuildpack::Container
       otherJvmOpts = " -verbose:gc -Xloggc:gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps "
 
       # Expect only one server instance to run, so there can be only one jvm config
-      @wlsJvmConfigFile         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
+      @wlsJvmConfigFile         = Dir.glob("#{@appConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
 
       if !@wlsJvmConfigFile.nil?
 
@@ -273,8 +299,13 @@ module JavaBuildpack::Container
 
       logger.debug { "Consolidated Java Options for Server: #{@droplet.java_opts.join(' ')}" }
 
+    end
 
-      # The Java Buildpack for WLS creates complete domain structure and other linkages during staging which unfortunately runs at /tmp/staged/app location
+
+    # Create a setup script that would recreate staging env's path structure inside the actual DEA runtime env and also embed additional jvm arguments at server startup
+    def createSetupEnvAndLinksScript
+
+      # The Java Buildpack for WLS creates the complete domain structure and other linkages during staging. The directory used for staging is at /tmp/staged/app
       # But the actual DEA execution occurs at /home/vcap/app. This discrepancy can result in broken paths and non-startup of the server.
       # So create linkage from /tmp/staged/app to actual environment of /home/vcap/app when things run in real execution
       # Also, this script needs to be invoked before starting the server as it will create the links and also tweak the server args (to listen on correct port, use user supplied jvm args)
@@ -388,11 +419,16 @@ module JavaBuildpack::Container
       modifyJvmTypeInCommEnv()
 
 
+      # Determine the configs that should be used to drive the domain creation.
+      # Is it the App bundled configs or the buildpack bundled configs
+      # The JVM and Domain configs of the App would always be used for domain/server names and startup arguments
+      configCacheRoot = determineConfigCacheLocation
+
       # Consolidate all the user defined service definitions provided via the app,
       # along with anything else that comes via the Service Bindings via the environment (VCAP_SERVICES) during staging/execution of the droplet.
 
       system "/bin/rm  #{@wlsCompleteDomainConfigsProps} 2>/dev/null"
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, @wlsConfigCacheRoot, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
       JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
@@ -401,7 +437,7 @@ module JavaBuildpack::Container
       # Run wlst.sh to generate the domain as per the requested configurations
 
       wlstScript = Dir.glob("#{@wlsInstall}" + "/**/wlst.sh")[0]
-      system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps}  > #{@wlsInstall}/wlstDomainCreation.log"
+      system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; echo #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps} > #{@wlsInstall}/wlstDomainCreation.log"
 
       logger.debug { "WLST finished generating domain. Log file saved at: #{@wlsInstall}/wlstDomainCreation.log" }
 
@@ -412,9 +448,12 @@ module JavaBuildpack::Container
     end
 
 
+    # Generate the property file based on app bundled configs for test against WLST
     def testServiceBindingParsing()
 
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, @wlsConfigCacheRoot, @wlsCompleteDomainConfigsProps)
+      configCacheRoot = determineConfigCacheLocation
+
+      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
       JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
@@ -461,7 +500,25 @@ module JavaBuildpack::Container
     end
 
     def wls?
-      (@application.root + WLS_CONFIG_CACHE_DIR).exist?
+      (@application.root + APP_WLS_CONFIG_CACHE_DIR).exist?
+    end
+
+    # Determine which configurations should be used for driving the domain creation - App or buildpack bundled configuration
+    def determineConfigCacheLocation
+
+      if (@preferAppConfig)
+
+        # Use the app bundled configuration and domain creation scripts.
+        @appConfigCacheRoot
+
+      else
+
+        # Use the buidlpack's bundled configuration and domain creation scripts (under resources/wls)
+        # But the jvm and domain configuration files from the app bundle will be used, rather than the buildpack version.
+        @buildpackConfigCacheRoot
+
+      end
+
     end
 
 
@@ -473,10 +530,14 @@ module JavaBuildpack::Container
       # Remove any existing references to wlsHome or domainPath
       modified = original.gsub(/  wlsHome:.*$\n/, "")
       modified = modified.gsub(/  domainPath:.*$\n/, "")
+      modified = modified.gsub(/  appName:.*$\n/, "")
+      modified = modified.gsub(/  appPath:.*$\n/, "")
 
       # Add new references to wlsHome and domainPath
       modified << "  wlsHome: #{@wlsHome.to_s}\n"
       modified << "  domainPath: #{@wlsDomainPath.to_s}\n"
+      modified << "  appName: ROOT\n"
+      modified << "  appPath: #{@wlsAppPath.to_s}\n"
 
       File.open(wlsDomainConfigFile, 'w') { |f| f.write modified }
 
@@ -505,19 +566,19 @@ module JavaBuildpack::Container
         File.open(commEnvScript, 'w') { |f| f.write modified }
       }
 
-      logger.debug { "Modified commEnv.sh files to use -server vm" }
+      logger.debug { "Modified commEnv.sh files to use '-server' vm from the default '-client' vm!!" }
 
     end
 
     def linkJarsToDomain()
 
-      @wlsPreClasspathJars         = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR}/*")
-      @wlsPostClasspathJars        = Dir.glob("#{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR}/*")
+      @wlsPreClasspathJars         = Dir.glob("#{@appConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR}/*")
+      @wlsPostClasspathJars        = Dir.glob("#{@appConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR}/*")
 
       logger.debug { "Linking pre and post jar directories relative to the Domain" }
 
-      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR} #{@domainHome}/#{WLS_PRE_JARS_CACHE_DIR} 2>/dev/null"
-      system "/bin/ln -s #{@wlsConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR} #{@domainHome}/#{WLS_POST_JARS_CACHE_DIR} 2>/dev/null"
+      system "/bin/ln -s #{@appConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR} #{@domainHome}/#{WLS_PRE_JARS_CACHE_DIR} 2>/dev/null"
+      system "/bin/ln -s #{@appConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR} #{@domainHome}/#{WLS_POST_JARS_CACHE_DIR} 2>/dev/null"
 
     end
 

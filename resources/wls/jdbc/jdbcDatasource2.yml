@@ -21,7 +21,7 @@ JDBCDatasource-2:
   xaProtocol: None
   initCapacity: 5
   maxCapacity: 30
-  # Lower the time duration for recreation of connection pool on failure or outage
+  # Lower the time duration for recreation of connection pool on failure or outage (like 30 seconds)
   connectionCreationRetryFrequency: 900
   testSql: SQL SELECT 1 from DUAL
 

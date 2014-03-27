@@ -17,7 +17,7 @@
 ---
 # You must specify a the repository root of an Oracle JRE repository. Please see the documentation for more detail.
 # e.g.  repository_root: "http://example.com/oracle-jre/{platform}/{architecture}"
-repository_root: "http://12.1.1.1:7001/fileserver/jdk"
+repository_root: "http://12.1.1.1:7777/fileserver/jdk"
 version: 1.7.0_+
 #memory_sizes:
 #  permgen: 128m..256m

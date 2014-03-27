@@ -4,7 +4,6 @@
 # Need serverName, domainName, user and password filled in
 #
 
-
 Domain:
   serverName: testServer
   domainName: cfDomain

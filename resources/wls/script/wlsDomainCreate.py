@@ -378,27 +378,14 @@ def createJmsConfig(jmsConfig, targetServer):
 #==========================================
 
 
-def deployApp(appConfig, targetServer):
+def deployApp(appName, appPath, targetServer):
   cd('/')
-  appName = appConfig.get('appName')
-  appPath = appConfig.get('appPath')
 
   app = create(appName, 'AppDeployment')
   cd('/AppDeployment/'+appName)
   set('SourcePath', appPath)
   set('Target', targetServer)
-
-def deployRootApp(targetServer):
-  cd('/')
-
-  appName = 'ROOT'
-  appPath = DOMAIN + '/app/ROOT'
-
-  app = create(appName, 'AppDeployment')
-  cd('/AppDeployment/'+appName)
-  set('SourcePath', appPath)
-  set('Target', targetServer)
-
+  print 'Deployed ' + appName + ' with source path: ' + appPath + ' to ' + targetServer
 
 
 
@@ -474,7 +461,10 @@ def configureDomain(domainConfigProps):
       foreignJmsConfig = getConfigSectionMap(domainConfigProps, sectionName)
       createForeignJMSResources(foreignJmsConfig, targetServer)
 
-  deployRootApp(targetServer)
+  appName = domainEnvConfig.get('appName')
+  appPath = domainEnvConfig.get('appPath')
+  deployApp(appName, appPath, targetServer)
+
   updateDomain()
   closeDomain()
  except ConfigParser.NoOptionError, err:
