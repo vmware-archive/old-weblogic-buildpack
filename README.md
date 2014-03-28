@@ -356,7 +356,7 @@ The script for generating the domain would be pulled from the buildpack configur
 But the name of the domain, server and user credentials would be pulled from Application bundled config files so each application can be named differently.
 The jvm configuration would also be pulled from the app bundled config (for app specific memory requirements).
 
-The option would let buildpack or application override the domain configuration is controlled by the **`preferAppConfig`** parameter specified inside the [weblogic.yml](config\weblogic.yml) config file of the buildpack.
+The option would let the buildpack or application override the domain configuration is controlled by the **`preferAppConfig`** parameter specified inside the [weblogic.yml](config\weblogic.yml) config file of the buildpack.
 
       ```
       version: 12.1.+
@@ -370,7 +370,10 @@ Setting the parameter to **`false`** would imply the buildpack's configurations 
 The Application supplied domain config and jvm config file would be used for names of the domain, server, user credentials and jvm memory and command line settings.
 
 For users starting to experiment with the buildpack and still tweaking and reconfiguring the generated domain, **`preferAppConfig` should be enabled so they can experiment more easily**.
+This would allow the app developer to quickly change/rebuild the domain to achieve the desired state rather than pushing changes to buildpack and redeploy the application also each time.
+
 On reaching the desired domain configuration state (Golden state), save the configurations and scripts into the buildpack and **disable the `preferAppConfig` parameter when no further changes are allowed or necessary** to the domain.
+One can also modify the domain creation script to lock down or block access to the WebLogic Admin Console or override the domain passwords, once the desired domain configuration has been achieved.
 
 Note:
 The Cloud Foundry services that are injected as part of the registered Service Bindings for the application would still be used to create related services during application deployment.

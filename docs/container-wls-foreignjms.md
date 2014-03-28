@@ -14,7 +14,7 @@ Sample Web Application (WAR) structure
               index.jsp
               .wls/
               .wls/foreignjms/
-              **.wls/foreignjms/foreignJmsConfig1.yml           <--------- Foreign JMS Config file**
+              .wls/foreignjms/foreignJmsConfig1.yml           <--------- Foreign JMS Config file
               .wls/jdbc/
               .wls/jdbc/jdbcDatasource1.yml
               .wls/jdbc/jdbcDatasource2.yml
@@ -27,10 +27,10 @@ Sample Web Application (WAR) structure
               .wls/preJars/
               .wls/preJars/README.txt
               .wls/script/
-              **.wls/script/wlsDomainCreate.py                 <--------- WLST Script**
+              .wls/script/wlsDomainCreate.py                 <--------- WLST Script
               .wls/security/
               .wls/security/securityConfig.yml
-              **.wls/wlsDomainConfig.yml                       <--------- Domain Config file**
+              .wls/wlsDomainConfig.yml                       <--------- Domain Config file
 
        ```
 
@@ -39,7 +39,7 @@ There can be multiple config files under the foreignjms folder.
 Tweak the WLST Script if there is need for additional configuration changes.
 
 
-Sample foreign jms config (from [foreignJmsConfig.yml](resources/wls/foreignjms/foreignJmsConfig.yml)
+Sample foreign jms config (from [foreignJmsConfig.yml](resources/wls/foreignjms/foreignJmsConfig.yml) )
 
 ```
 
@@ -79,16 +79,16 @@ ForeignJMS-1:
 
 ```
 
-* `name` would determine the JMS Module and Foreign JMS Server configuration
-* Provide all the Javax Naming parameters (like provider url, credentials, initial context factory) to connect to the remote servie provider using the `jndiProperties` parameter. Use the `;` to specify the name-value pairs.
-* Specify the remote Connection Factories using `cfs` parameter.
-* Specify the Destinations using `destinations` parameter.
-* Use  **`|`** as separator between the local jndi (jndi name for the local stub of the remote service) and remote jndi name (actual JNDI name of the remote service) for both destinations and connection factories
-  Syntax: Local_JNDI_Name**|**Remote_JNDI_Name
+* **`name`** would determine the JMS Module and Foreign JMS Server configuration
+* Provide all the Javax Naming parameters (like provider url, credentials, initial context factory) to connect to the remote servie provider using the **`jndiProperties`** parameter. Use the **`=`** to specify the name-value pairs.
+* Specify the remote Connection Factories using **`cfs`** parameter.
+* Specify the Destinations using **`destinations`** parameter.
+* Use  **`|`** as separator between the local jndi (jndi name for the local stub of the remote service) and remote jndi name (actual JNDI name of the remote service) for both destinations and connection factories.
+  Syntax: Local_JNDI_Name|Remote_JNDI_Name
 
   Sample:
   ```
-    cfs: jms/cf/LocalQXACF**|**jms/cf/RemoteQXACF**;**jms/cf/LocalTXACF**|**jms/cf/RemoteTXACF
+    cfs: jms/cf/LocalQXACF|jms/cf/RemoteQXACF;jms/cf/LocalTXACF|jms/cf/RemoteTXACF
   ```
 * Use **`;`** to separate multiple destinations or connection factories.
 

@@ -103,41 +103,42 @@ JDBCDatasource-2:
 ```
 * Description of Parameters:
 
- * If a Multi-pool configuration (like going against Oracle RAC or multiple DB instances sharing same databases) is required, ensure the `isMultiDS` is set to true and fill in the jdbcUrlPrefix and jdbcUrlEndpoints.
+ * **`isMultiDS`** denotes usage of Multi-pools to access multiple database instances to provide high availability and failover.
+ If enabled (set to true), ensure the **`jdbcUrlPrefix`** and **`jdbcUrlEndpoints`** are specified.
 
-   * The `jdbcUrlPrefix` would refer to the jdbc url portion without the server endpoint and service name while the `jdbcUrlEndpoints` would specify the server and service names.
+   * The **`jdbcUrlPrefix`** should refer to the jdbc url portion without the server endpoint and service name
+   * The **`jdbcUrlEndpoints`** should specify the server and service names.
      Sample:
      ```
-      # JdbcUrlPrefix is the driver url without the ':@' followed by hostname/port/service data - required for Multipool
-      **jdbcUrlPrefix: jdbc:oracle:thin**
-      # Use the | pipe character to delimit the various hosts that form the underlying datasources for the multipool
-      **jdbcUrlEndpoints: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3**
+      # **`jdbcUrlPrefix`** is the driver url without the ':@' followed by hostname/port/service data - required for Multipool
+      jdbcUrlPrefix: jdbc:oracle:thin
+      # Use the **`|`** pipe character to delimit the various hosts that form the underlying datasources for the multipool
+      jdbcUrlEndpoints: localhost:1531:orcl1|localhost:1541:orcl2|localhost:1551:orcl3
+      ```
+   * **`mp_algorithm`** should be either **`Load-Balancing`** or **`Failover`** depending on nature of usage of the database instances.
 
-     ```
-   * Specify the `mp_algorithm` to be either `Load-Balancing` or `Failover` depending on nature of usage of the database instances.
+ * **`jndiName`** would refer to the datasource JNDI Name
 
- * `jndiName` would refer to the datasource JNDI Name
+ * **`initCapacity`** would used for creating an initial number of connections in the pool.
 
- * `initCapacity` would used for creating an initial number of connections in the pool.
+ * **`maxCapacity`** would determine the maximum number of connections allowed in the pool under load.
 
- * `maxCapacity` would determine the maximum number of connections allowed in the pool under load.
+ * **`testSQL`** would be the sql used to test the health of the connections in the pool.
 
- * `testSQL` would be the sql used to test the health of the connections in the pool.
-
- * `connectionCreationRetryFrequency` would the time period to wait between retries to recreate the connections in the pool on previous failures.
+ * **`connectionCreationRetryFrequency`** would the time period to wait between retries to recreate the connections in the pool on previous failures.
    Setting this parameter to low intervals would allow faster recovery after failures; Setting it to higher value would delay the recovery but avoid overwhelming the database under heavy load all at once due to the connection recreation.
 
- * `username` and `password` are credentials used for connecting to the database instance.
+ * **`username`** and `password`** are credentials used for connecting to the database instance.
 
- * `driver` can be either non-XA or XA driver.
+ * **`driver`** can be either non-XA or XA driver.
 
- * Based on the driver type, specify the `xaProtocol`.
-   * For XA Drivers, specify `TwoPhaseCommit` as value for the `xaProtocol`
-   * For non-XA Drivers, there are three options that can be specified against `xaProtocol`
-     * Use `None` if the datasource should not participate in Global Transactions
-     * Use `OnePhaseCommit` if the datasource should participate in a global transaction without any additional participants.
-     * Use `EmulateTwoPhaseCommit` if the datasource needs to be participate in global transaction with XA using the emulate option.
-     * Use `LoggingLastResource` option if the datasource can use LLR option.
+ * Based on the driver type, specify the **`xaProtocol`**.
+   * For XA Drivers, specify `TwoPhaseCommit` as value for the **`xaProtocol`**
+   * For non-XA Drivers, there are three options that can be specified against **`xaProtocol`**
+     * Use **`None`** if the datasource should not participate in Global Transactions
+     * Use **`OnePhaseCommit`** if the datasource should participate in a global transaction without any additional participants.
+     * Use **`EmulateTwoPhaseCommit`** if the datasource needs to be participate in global transaction with XA using the emulate option.
+     * Use **`LoggingLastResource`** option if the datasource can use LLR option.
 
    Note: Since the WebLogic server instance running on Cloud Foundry does not have a true restart option as well as no persistent store for saving and recovering the transaction logs, using XA and global transactions is limited to the lifetime of the server instance.
    The above XA options would work as long as the server instance is up and running but all transaction logs are lost on death of the server as any instance would a brand new entity with no awareness of its earlier state (or pending transactions).

@@ -27,10 +27,10 @@ Sample Web Application (WAR) structure
               .wls/preJars/
               .wls/preJars/README.txt
               .wls/script/
-              **.wls/script/wlsDomainCreate.py                 <--------- WLST Script**
+              .wls/script/wlsDomainCreate.py                 <--------- WLST Script
               .wls/security/
               .wls/security/securityConfig.yml
-              **.wls/wlsDomainConfig.yml                       <--------- Domain Config file**
+              .wls/wlsDomainConfig.yml                       <--------- Domain Config file
 
        ```
 
@@ -57,4 +57,9 @@ Domain:
 
 ```
 
-
+* **`serverName`** denotes the name of the generated server
+* **`domainName`** denotes the name of the generated domain
+* **`wlsUser`** denotes the name of the admin user
+* **`wlsPaswd`** denotes the password of the admin user
+* **`consoleEnabled`** enables or disables WLS Admin Console deployment
+* **`prodModeEnabled`** enables or disables Production Mode in WLS.

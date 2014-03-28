@@ -64,10 +64,12 @@ JMS-1:
 
 ```
 
-Multiple destinations or Connection Factories can be separated using the `;` character.
+* **`jmsServer`** used to specify the name of the JMS Server.
+* **`moduleName`** used to specify the name of the JMS Module targetted to the server.
+* **`queues`** used to specify set of local JMS Queues. Provide the jndi name of the Queue. If multiple queues, separate names using **`;`** character.
+* **`topics`** used to specify set of local JMS Topics. Provide the jndi name of the Topic. If multiple topics, separate names using **`;`** character.
+* **`xaCfs`** used to specify set of JMS Connection Factories that are XA enabled. Provide the jndi name of the CFs. If multiple CFs, separate names using **`;`** character.
+* **`nonXaCfs`** used to specify set of JMS Connection Factories that are not XA enabled. Provide the jndi name of the CFs. If multiple CFs, separate names using **`;`** character.
 
-Sample:
-  `queues: jms/queue/TestQ**;**com/test/FooQ`
-  `xaCfs: jms/cf/QXACF**;**jms/cf/TXACF`
 
 

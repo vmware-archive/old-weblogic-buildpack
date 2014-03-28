@@ -231,6 +231,7 @@ module JavaBuildpack::Container
     # @return [Hash] the configuration or an empty hash if the configuration file does not exist
     def setupJvmArgs
 
+      # Go with some defaults
       minPermSize = 128
       maxPermSize = 256
       minHeapSize = 512
@@ -247,8 +248,8 @@ module JavaBuildpack::Container
 
         @jvmConfig    = jvmConfiguration["JVM"]
 
-        minPermSize = @jvmConfig['minPermSize']
-        maxPermSize = @jvmConfig['maxPermSize']
+        minPermSize = @jvmConfig['minPerm']
+        maxPermSize = @jvmConfig['maxPerm']
         logger.debug { "JVM config passed with App: #{@jvmConfig.to_s}" }
 
         # Set Default Min and Max Heap Size for WLS

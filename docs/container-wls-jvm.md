@@ -51,9 +51,9 @@ Sample domain config (from [jvmConfig.yml](resources/wls/jvm/jvmConfig.yml)
 JVM:
   # For optimal performance, set min and max perm size to same value
   # for large apps with lots of classes/jsp etc., bump to 512 or 1024m
-  minPermSize: 256
-  maxPermSize: 256
-  #maxPermSize: 512
+  minPerm: 256
+  maxPerm: 256
+  #maxPerm: 512
   # For optimal perf, set min and max heap size to same value
   # For large apps, bump to 1024 or 2048 MB (depending on the quota..)
   minHeap: 512
@@ -62,5 +62,10 @@ JVM:
 
 
 ```
+* **`minPerm`** denotes initial size of Perm Generation space
+* **`maxPerm`** denotes maximum size of Perm Generation space
+* **`minHeap`** denotes minimum size of Java Heap
+* **`maxHeap`** denotes maximum size of Java Heap
+* **`otherJvmOpts`** can be used to specify additional command line arguments or JVM settings.
 
 
