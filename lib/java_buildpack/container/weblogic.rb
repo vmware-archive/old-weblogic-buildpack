@@ -438,7 +438,7 @@ module JavaBuildpack::Container
       # Run wlst.sh to generate the domain as per the requested configurations
 
       wlstScript = Dir.glob("#{@wlsInstall}" + "/**/wlst.sh")[0]
-      system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; echo #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps} > #{@wlsInstall}/wlstDomainCreation.log"
+      system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps} > #{@wlsInstall}/wlstDomainCreation.log"
 
       logger.debug { "WLST finished generating domain. Log file saved at: #{@wlsInstall}/wlstDomainCreation.log" }
 
