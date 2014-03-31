@@ -264,23 +264,23 @@ module JavaBuildpack::Container
 
       javaOptTokens.each { |token|
 
-        if token[/-XX:PermSize/]
-          minPermSize = token[/[0-9]+/].to_i
+        intValueInMB =  token[/[0-9]+/].to_i
+        # The values incoming can be in MB or KB
+        # Anything over 61440 is atleast in KB and needs to be converted to MB
+        intValueInMB = (intValueInMB / 1024) if (intValueInMB > 61440)
 
-          # Convert to MBs
-          minPermSize = (minPermSize / 1024) if (minPermSize > 20480)
+        if token[/-XX:PermSize/]
+          minPermSize = intValueInMB
           minPermSize = 128 if (minPermSize < 128)
 
         elsif token[/-XX:MaxPermSize/]
-          maxPermSize = token[/[0-9]+/].to_i
-          # Convert to MBs
-          maxPermSize = (maxPermSize / 1024) if (maxPermSize > 20480)
+          maxPermSize = intValueInMB
           maxPermSize = 256 if (maxPermSize < 128)
 
         elsif token[/-Xms/]
-          minHeapSize = token[/[0-9]+/].to_i
+          minHeapSize = intValueInMB
         elsif token[/-Xmx/]
-          maxHeapSize = token[/[0-9]+/].to_i
+          maxHeapSize = intValueInMB
         else
           otherJvmOpts = otherJvmOpts + " " + token
         end
