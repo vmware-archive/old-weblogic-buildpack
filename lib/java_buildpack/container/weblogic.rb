@@ -144,8 +144,8 @@ module JavaBuildpack::Container
     WLS_PRE_JARS_CACHE_DIR      = 'preJars'.freeze
     WLS_POST_JARS_CACHE_DIR     = 'postJars'.freeze
 
-    # Location to save/store the application during deployment
-    ROOT_APPS_LOC               = 'apps'.freeze
+    # Parent Location to save/store the application during deployment
+    DOMAIN_APPS_FOLDER             = 'apps'.freeze
 
     WLS_SERVER_START_SCRIPT     = 'startWebLogic.sh'.freeze
     WLS_COMMON_ENV_SCRIPT       = 'commEnv.sh'.freeze
@@ -162,6 +162,8 @@ module JavaBuildpack::Container
     CLIENT_VM                = '-client'.freeze
     WEB_INF_DIRECTORY        = 'WEB-INF'.freeze
     JAVA_BINARY              = 'java'.freeze
+
+    APP_NAME                 = 'ROOT'.freeze
 
 
 
@@ -189,10 +191,10 @@ module JavaBuildpack::Container
       domainConfiguration       = YAML.load_file(@wlsDomainYamlConfigFile)
       logger.debug { "WLS Domain Configuration: #{@wlsDomainYamlConfigFile}: #{domainConfiguration}" }
 
-      @domainConfig = domainConfiguration["Domain"]
-      @domainName   = @domainConfig['domainName']
-      @domainHome   = @wlsDomainPath + @domainName
-      @wlsAppPath   = @domainHome + ROOT_APPS_LOC
+      @domainConfig  = domainConfiguration["Domain"]
+      @domainName    = @domainConfig['domainName']
+      @domainHome    = @wlsDomainPath + @domainName
+      @domainAppsDir = @domainHome + DOMAIN_APPS_FOLDER
 
       # There can be multiple service definitions (for JDBC, JMS, Foreign JMS services)
       # Based on chosen config location, load the related files
@@ -217,11 +219,11 @@ module JavaBuildpack::Container
       logger.debug { "--------------------------------------" }
       logger.debug { "  Domain Name                : #{@domainName}" }
       logger.debug { "  Domain Location            : #{@domainHome}" }
-      logger.debug { "  App Location               : #{@wlsAppPath}\n" }
+      logger.debug { "  Apps Directory             : #{@domainAppsDir}" }
+      logger.debug { "  Using App bundled Config?  : #{@domainAppsDir}" }
 
       logger.debug { "  Domain creation script     : #{@wlsDomainConfigScript}" }
       logger.debug { "  Input WLS Yaml Configs     : #{@wlsCompleteDomainConfigsYml}" }
-      logger.debug { "  Generated WLS Props Config : #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
 
       domainConfiguration || {}
@@ -413,6 +415,9 @@ module JavaBuildpack::Container
 
       end
 
+      logger.debug { "Starting WebLogic Install" }
+      print "       Starting WebLogic Install"
+
       system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
       logger.debug { "Finished running configure script, output saved at #{@wlsInstall}/configureRun.log" }
 
@@ -434,17 +439,30 @@ module JavaBuildpack::Container
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
 
+      logger.debug { "Configurations for WLS Domain Creation" }
+      logger.debug { "--------------------------------------" }
+      logger.debug { "  Domain Name                : #{@domainName}" }
+      logger.debug { "  Domain Location            : #{@domainHome}" }
+      logger.debug { "  App Deployment Name        : #{APP_NAME}" }
+      logger.debug { "  Domain Apps Directory      : #{@domainAppsDir}" }
+      logger.debug { "  Using App bundled Config?  : #{@preferAppConfig}" }
+      logger.debug { "  Domain creation script     : #{@wlsDomainConfigScript}" }
+      logger.debug { "  WLST Input Config          : #{@wlsCompleteDomainConfigsProps}" }
+      logger.debug { "--------------------------------------" }
+
 
       # Run wlst.sh to generate the domain as per the requested configurations
 
       wlstScript = Dir.glob("#{@wlsInstall}" + "/**/wlst.sh")[0]
       system "/bin/chmod +x #{wlstScript}; export JAVA_HOME=#{@javaHome}; #{wlstScript}  #{@wlsDomainConfigScript} #{@wlsCompleteDomainConfigsProps} > #{@wlsInstall}/wlstDomainCreation.log"
 
-      logger.debug { "WLST finished generating domain. Log file saved at: #{@wlsInstall}/wlstDomainCreation.log" }
+      logger.debug { "WLST finished generating domain under #{@domainHome.relative_path_from(@droplet.root)}. WLST log saved at: #{@wlsInstall}/wlstDomainCreation.log" }
 
       linkJarsToDomain
 
-      print "-----> Finished configuring WebLogic Domain under #{@domainHome.relative_path_from(@droplet.root)}\n"
+      print "-----> Finished configuring WebLogic Domain under #{@domainHome.relative_path_from(@droplet.root)}.\n"
+      print "       WLST log saved at: #{@wlsInstall}/wlstDomainCreation.log\n"
+
       puts "(#{(Time.now - configure_start_time).duration})"
     end
 
@@ -485,11 +503,11 @@ module JavaBuildpack::Container
     end
 
     def webapps
-      @wlsAppPath
+      @domainAppsDir
     end
 
     def root
-      webapps + 'ROOT'
+      webapps + APP_NAME
     end
 
     def web_inf_lib
@@ -532,13 +550,13 @@ module JavaBuildpack::Container
       modified = original.gsub(/  wlsHome:.*$\n/, "")
       modified = modified.gsub(/  domainPath:.*$\n/, "")
       modified = modified.gsub(/  appName:.*$\n/, "")
-      modified = modified.gsub(/  appPath:.*$\n/, "")
+      modified = modified.gsub(/  appSrcPath:.*$\n/, "")
 
       # Add new references to wlsHome and domainPath
       modified << "  wlsHome: #{@wlsHome.to_s}\n"
       modified << "  domainPath: #{@wlsDomainPath.to_s}\n"
-      modified << "  appName: ROOT\n"
-      modified << "  appPath: #{@wlsAppPath.to_s}\n"
+      modified << "  appName: #{APP_NAME}\n"
+      modified << "  appSrcPath: #{@domainAppsDir.to_s + "/#{APP_NAME}"}\n"
 
       File.open(wlsDomainConfigFile, 'w') { |f| f.write modified }
 

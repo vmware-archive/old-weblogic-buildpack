@@ -383,7 +383,7 @@ def deployApp(appName, appPath, targetServer):
 
   app = create(appName, 'AppDeployment')
   cd('/AppDeployment/'+appName)
-  set('SourcePath', appPath)
+  set('SourcePath', appPath )
   set('Target', targetServer)
   print 'Deployed ' + appName + ' with source path: ' + appPath + ' to ' + targetServer
 
@@ -453,16 +453,12 @@ def configureDomain(domainConfigProps):
       jmsConfig = getConfigSectionMap(domainConfigProps, sectionName)
       createJmsConfig(jmsConfig, targetServer)
 
-    elif (sectionName.startswith("App")):
-      appConfig = getConfigSectionMap(domainConfigProps, sectionName)
-      deployApp(appConfig, targetServer)
-
     elif (sectionName.startswith("Foreign")):
       foreignJmsConfig = getConfigSectionMap(domainConfigProps, sectionName)
       createForeignJMSResources(foreignJmsConfig, targetServer)
 
   appName = domainEnvConfig.get('appName')
-  appPath = domainEnvConfig.get('appPath')
+  appPath = domainEnvConfig.get('appSrcPath')
   deployApp(appName, appPath, targetServer)
 
   updateDomain()
