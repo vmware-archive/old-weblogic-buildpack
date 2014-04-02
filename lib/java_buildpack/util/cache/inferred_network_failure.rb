@@ -14,20 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'java_buildpack/util'
-
 module JavaBuildpack
   module Util
+    module Cache
 
-    # Qualifies the path such that is is formatted as +$PWD/<path>+.  Also ensures that the path is relative to a root,
-    # which defaults to the +@droplet_root+ of the class.
-    #
-    # @param [Pathname] path the path to qualify
-    # @param [Pathname] root the root to make relative to
-    # @return [String] the qualified path
-    def qualify_path(path, root = @droplet_root)
-      "$PWD/#{path.relative_path_from(root)}"
+      # An error thrown when a we infer that an error has occurred (rather than receiving an explicit indication)
+      class InferredNetworkFailure < StandardError
+      end
+
     end
-
   end
 end

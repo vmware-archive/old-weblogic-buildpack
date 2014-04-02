@@ -1,6 +1,6 @@
 # Encoding: utf-8
 # Cloud Foundry Java Buildpack
-# Copyright 2013 the original author or authors.
+# Copyright (c) 2014 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,20 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'java_buildpack/util'
+require 'rakelib/to_b'
 
-module JavaBuildpack
-  module Util
+module Package
 
-    # Qualifies the path such that is is formatted as +$PWD/<path>+.  Also ensures that the path is relative to a root,
-    # which defaults to the +@droplet_root+ of the class.
-    #
-    # @param [Pathname] path the path to qualify
-    # @param [Pathname] root the root to make relative to
-    # @return [String] the qualified path
-    def qualify_path(path, root = @droplet_root)
-      "$PWD/#{path.relative_path_from(root)}"
-    end
+  ARCHITECTURES = %w(x86_64).freeze
 
-  end
+  BUILD_DIR = 'build'.freeze
+
+  HASH = `git rev-parse --short HEAD`.chomp.freeze
+
+  OFFLINE = ENV['OFFLINE'].to_b.freeze
+
+  PLATFORMS = %w(centos6 lucid mountainlion precise).freeze
+
+  REMOTE = `git config --get remote.origin.url`.chomp.freeze
+
+  STAGING_DIR = "#{BUILD_DIR}/staging".freeze
+
+  VERSION = (ENV['VERSION'] || HASH).freeze
+
+  PACKAGE_NAME = "#{BUILD_DIR}/weblogic-buildpack#{'-offline' if OFFLINE}-#{VERSION}.zip".freeze
+
 end

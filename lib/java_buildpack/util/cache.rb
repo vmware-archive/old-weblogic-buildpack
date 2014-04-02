@@ -15,7 +15,18 @@
 # limitations under the License.
 
 require 'java_buildpack/util'
+require 'pathname'
 
-# A module encapsulating all of the utility components for caching
-module JavaBuildpack::Util::Cache
+module JavaBuildpack
+  module Util
+
+    # A module encapsulating all of the utility components for caching
+    module Cache
+
+      # The location to find cached resources in the buildpack
+      CACHED_RESOURCES_DIRECTORY = Pathname.new(File.expand_path('../../../../resources/cache', __FILE__))
+
+    end
+
+  end
 end

@@ -19,15 +19,21 @@ require 'java_buildpack/util'
 module JavaBuildpack
   module Util
 
-    # Qualifies the path such that is is formatted as +$PWD/<path>+.  Also ensures that the path is relative to a root,
-    # which defaults to the +@droplet_root+ of the class.
+    # Find a start script relative to a root directory.  A start script is defined as existing in the +bin/+ directory and
+    # being either the only file, or the only file with a counterpart named +<filename>.bat+
     #
-    # @param [Pathname] path the path to qualify
-    # @param [Pathname] root the root to make relative to
-    # @return [String] the qualified path
-    def qualify_path(path, root = @droplet_root)
-      "$PWD/#{path.relative_path_from(root)}"
+    # @param [Pathname] root the root to search from
+    # @return [Pathname, nil] the start script or +nil+ if one does not exist
+    def start_script(root)
+      if root
+        candidates = (root + 'bin/*').glob
+        candidates.size == 1 ? candidates.first : candidates.find { |candidate| Pathname.new("#{candidate}.bat").exist? }
+      else
+        nil
+      end
     end
+
+    module_function :start_script
 
   end
 end

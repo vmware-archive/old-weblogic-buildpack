@@ -1,407 +1,113 @@
-# Cloud Foundry WebLogic Buildpack
+# Cloud Foundry Java Buildpack
+[![Build Status](https://travis-ci.org/cloudfoundry/java-buildpack.svg?branch=master)](https://travis-ci.org/cloudfoundry/java-buildpack)
+[![Dependency Status](https://gemnasium.com/cloudfoundry/java-buildpack.svg)](https://gemnasium.com/cloudfoundry/java-buildpack)
+[![Code Climate](https://codeclimate.com/repos/5224adaec7f3a3415107004c/badges/bc49f7d7f8dfc47057c8/gpa.svg)](https://codeclimate.com/repos/5224adaec7f3a3415107004c/feed)
+[![Code Climate](https://codeclimate.com/repos/5224adaec7f3a3415107004c/badges/bc49f7d7f8dfc47057c8/coverage.svg)](https://codeclimate.com/repos/5224adaec7f3a3415107004c/feed)
 
-The **`weblogic-buildpack`** is a [Cloud Foundry][] buildpack for running JVM-based web applications on [Oracle WebLogic Application Server][].  It is designed to run WebLogic-based web or ear applications with minimal configuration on CloudFoundry.
-This buildpack is based on a fork of the [java-buildpack][].
-
-A single server WebLogic Domain configuration wih deployed application would be created by the buildpack. The complete bundle of the server and application bits would be used to create a droplet for execution within Cloud Foundry.
-
-## Requirements
-* WebLogic Server and JDK Binaries
-   * The WebLogic Server release bits and jdk binaries should be accessible for download from a server (can be internal or public facing) for the buildpack to create the necessary configurations along with the app bits.
-     Download the [Linux 64 bit JRE][] version and [WebLogic Server][] generic version.
-
-     For testing in a [bosh-lite][] environment, create a loopback alias on the machine so the download server hosting the binaries is accessible from the droplet container during staging.
-   
-     Sample script for Mac
-	 
-     ```#!/bin/sh
-        ifconfig lo0 alias 12.1.1.1
-     ```
-
-   * Edit the repository_root of [oracle_jre.yml](config/oracle_jre.yml) to point to the location hosting the Oracle JRE binary.
-   
-     Sample **`repository_root`** for oracle_jre.yml (under weblogic-buildpack/config)
-     
-	  ```
-       repository_root: "http://12.1.1.1:7777/fileserver/jdk"
-	  ````
-
-      The buildpack would look for an **`index.yml`** file at the specified **repository_root** for obtaining jdk related bits.
-      The index.yml at the repository_root location should have a entry matching the jdk/jre version and the corresponding jdk binary file
-     
-      ```
-        ---
-          1.7.0_51: http://12.1.1.1:7777/fileserver/jdk/jre-7u51-linux-x64.tar.gz
-       ```
-       Ensure the JRE binary is available at the location indicated by the index.yml referred by the jre repository_root
-
-   * Edit the repository_root of [weblogic.yml](config/weblogic.yml) to point to the server hosting the weblogic binary.
-
-     Sample **`repository_root`** for weblogic.yml (under weblogic-buildpack/config)
-
-      ```
-      version: 12.1.+
-      repository_root: "http://12.1.1.1:7777/fileserver/wls"
-      preferAppConfig: false
-
-      ```
-
-	  The buildpack would look for an **`index.yml`** file at the specified **repository_root** for obtaining WebLogic related bits.
-	  The index.yml at the repository_root location should have a entry matching the weblogic server version and the corresponding release bits
-
-      ```
-        ---
-          12.1.2: http://12.1.1.1:7777/fileserver/wls/wls1212_dev.zip
-      ```
-      Ensure the WebLogic Server binary is available at the location indicated by the index.yml referred by the weblogic repository_root
-
-
-* Cloud Foundry Release version and manifest update
-
-   * The Cloud Foundry Cloud Controller (cc) Nginx Engine defaults to a max payload size of 256MB. This setting is governed by the **`client_max_body_size`** parameter in the cc and ccng related properties of the cf manifest file.
-   
-     ```
-	 
-     properties:
-       ...
-       cc:
-         app_events:
-           cutoff_age_in_days: 31
-         ....
-         bulk_api_password: bulk-password
-         client_max_body_size: 256M
-       ....
-       ccng:
-         app_events:
-           cutoff_age_in_days: 31
-         app_usage_events:
-           cutoff_age_in_days: 31
-         ....
-         bulk_api_password: bulk-password
-         client_max_body_size: 256M
-     
-	 ```
-	 
-     The Cloud Foundry DEA droplet containing a zip of the full weblogic server, JDK/JRE binaries and app bits would exceed 520 MB in size. The *`client_max_body_size`* limit of *256M* would limit the droplet transfer to Cloud Controller and failure during staging.
-     The *`client_max_body_size`* attribute within the cf-manifest file should be updated to allow *750MB (or higher)* depending on size of the application bits.
-
-     Sample manifest with updated *client_max_body_size*:
-
-     ```
-
-     properties:
-       ...
-       cc:
-         app_events:
-           cutoff_age_in_days: 31
-         ....
-         bulk_api_password: bulk-password
-         client_max_body_size: 756M
-       ....
-       ccng:
-         app_events:
-           cutoff_age_in_days: 31
-         app_usage_events:
-           cutoff_age_in_days: 31
-         ....
-         bulk_api_password: bulk-password
-         client_max_body_size: 756M
-
-	 ```
-
-     * CF Releases prior to **`v157`** used to hardcode the *`client_max_body_size`* to *256M*. So, overriding it with the manifest entry will not work unless the bosh-lite or hosting environment has been updated to *`v158`* or higher Cloud Foundry release.
-
-* Application configuration
-The buildpack looks for the presence of a **`.wls`** folder within the app at the root level as part of the detect call to proceed further.
-Additional configurations and scripts packaged within the **`.wls`** folder would determine the resulting WebLogic Domain and services configuration generated by the buildpack.
-
-The buildpack can override some of the configurations (jdbc/jms/..) while allowing only the app bundled domain config and jvm config to be used for droplet execution using **preferAppConfig** setting.
-Please refer to [Overriding App Bundled Configuration](#overriding-app-bundled-configuration) section for more details.
-
-
-   * Sample App structure
-
-     Sample Web Application (WAR) structure
-     ```
-	 
-              META-INF/
-              META-INF/MANIFEST.MF
-              WEB-INF/
-              WEB-INF/lib/
-              WEB-INF/web.xml
-              WEB-INF/weblogic.xml
-              index.jsp
-              .wls/
-              .wls/foreignjms/
-              .wls/foreignjms/foreignJmsConfig1.yml
-              .wls/jdbc/
-              .wls/jdbc/jdbcDatasource1.yml
-              .wls/jdbc/jdbcDatasource2.yml
-              .wls/jms/
-              .wls/jms/jmsConfig.yml
-              .wls/jvm/
-              .wls/jvm/jvmConfig.yml
-              .wls/postJars/
-              .wls/postJars/README.txt
-              .wls/preJars/
-              .wls/preJars/README.txt
-              .wls/script/
-              .wls/script/wlsDomainCreate.py
-              .wls/security/
-              .wls/security/securityConfig.yml
-              .wls/wlsDomainConfig.yml
-			  
-       ```
-
-   * Domain configuration (Required)
-   
-     The **`.wls`** folder should contain a single yaml file that contains information about the target domain, server name, user credentials etc.
-     There is a sample [Domain config ](resources/wls/wlsDomainConfig.yml) bundled within the buildpack that can be used as a template to modify/extend the resulting domain.
-	 
-	 Refer to [domain](docs/container-wls-domain.md) for more details.
-	 
-   * Scripts (Required)
-   
-     There can be a **`script`** folder within **`.wls`** with a WLST jython script, for generating the domain
-     There is a sample [Domain creation script](resources/wls/script/wlsDomainCreate.py) bundled within the buildpack that can be used as a template to modify/extend the resulting domain.
-     
-	 Refer to [script](docs/container-wls-script.md) for more details.
-	 
-   * JVM related configuration (non-mandatory)
-   
-     There can be a **`jvm`** folder within **`.wls`** with a yaml file for JVM configuration to be applied to the server instance.
-     There is a sample [JVM config](resources/wls/jvm/jvmConfig.yml) bundled within the buildpack that can be used as a template to modify/extend the resulting domain with additional datasources.
-     
-	 Refer to [jvm](docs/container-wls-jvm.md) for more details.
-	 
-   * JDBC Datasources related configuration (non-mandatory)
-   
-     There can be a **`jdbc`** folder within **`.wls`** with multiple yaml files, each containing configuration relating to datasources (single or multi-pool).
-     There is a sample [JDBC config](resources/wls/jdbc/jdbcDatasource1.yml) bundled within the buildpack that can be used as a template to modify/extend the resulting domain with additional datasources.
-     
-	 Refer to [jdbc](docs/container-wls-jdbc.md) for more details.
-	 
-   * JMS Resources related configuration (non-mandatory)
-   
-     There can be a **`jms`** folder within **`.wls`** with a yaml file, containing configuration relating to jms resources
-     There is a sample [JMS config](resources/wls/jms/jmsConfig.yml) bundled within the buildpack that can be used as a template to modify/extend the resulting domain with JMS Destinations/Connection Factories.
-	 
-	 Refer to [jms](docs/container-wls-jms.md) for more details.
-     	 
-   * Foreign JMS Resources related configuration (non-mandatory)
-   
-     There can be a **`foreignjms`** folder within **`.wls`** with a yaml file, containing configuration relating to Foreign jms resources
-     There is a sample [Foreign JMS config](resources/wls/foreignjms/foreignJmsConfig.yml) bundled within the buildpack that can be used as a template to modify/extend the resulting domain with Foreign JMS Services.
-     	 
-	 Refer to [foreignjms](docs/container-wls-foreignjms.md) for more details.
-
-   * Security Resources related configuration (non-mandatory)
-   
-     There can be a **security** folder within **.wls** with a yaml file, containing configuration relating to security configuration
-     Add security related configurations as needed and update the domain creation script to use those configurations to modify/extend the resulting domain.
-   	 
-   * Pre and Post Jar folders (non-mandatory)
-   
-     The **`preJars`** folder within **`.wls`** can contain multiple jars or other resources, required to be loaded ahead of the WebLogic related jars. This can be useful for loading patches, debug jars, other resources that should override the bundled WebLogic jars.
-   
-     The **`postJars`** folder within **`.wls`** can contain multiple jars or other resources, required to be loaded after the WebLogic related jars. This can be useful for loading JDBC Drivers, Application dependencies or other resources as part of the server classpath.
-
-   * Pre-existing Services bound to the Application
-     * Services that are bound to the application via the Service Broker functionality would be used to configure and create related services in the WebLogic Domain.
-       * The **VCAP_SERVICES** environment variable would be parsed to identify MySQL, PostGres or other services and create associated configurations in the resulting domain.
-       * The services can be either from [Pivotal Web Services Marketplace][] or [User Provided Services][] (like internal databases or services managed by internal Administrators and user applications just connect to it).
-
-
+The `java-buildpack` is a [Cloud Foundry][] buildpack for running JVM-based applications.  It is designed to run many JVM-based applications ([Grails][], [Groovy][], Java Main, [Play Framework][], [Spring Boot][], and Servlet) with no additional configuration, but supports configuration of the standard components, and extension to add custom components.
 
 ## Usage
 To use this buildpack specify the URI of the repository when pushing an application to Cloud Foundry:
 
-```
-bash
-cf push -b https://github.com/pivotal-cf/weblogic-buildpack <APP_NAME> -p <APP_BITS>
-```
-
-While working in sandbox env against Bosh-Lite, its also possible to use a modified version of the buildpack without github repository using the zip format of the buildpack.
-**Note:** Use zip to create the buildpack (rather than jar) to ensure the detect, compile, release have execute permissions during the actual building of the app.
-
-```
-bash
-cf create-buildpack java-buildpack-WLS java-buildpack-WLS.zip 1 --enable
-```
-
-## CF App Push
-A domain would be created based on the configurations and script passed with the app by the buildpack on `cf push` command.
-
-The droplet containing the entire weblogic install, domain and application bits would be get executed (with the app specified jvm settings and generated/configured services) by Cloud Foundry.
-A single server instance would be started as part of the droplet execution. The WebLogic Listen Port of the server would be controlled by the warden container managing the droplet.
-
-The application can be scaled up or down using cf scale command. This would trigger multiple copies of the same droplet (indentical server configuration and application bits but different server listen ports) to be executing in parallel.
-
-Note: Ensure `cf push` uses **`-m`** argument to specify a minimum process memory footprint of 1024 MB (1GB). Failure to do so will result in very small memory size for the droplet container and the jvm startup can fail.
-
-Sample cf push: 
-
-````
-bash
-cf push wlsSampleApp -m 1024M -p wlsSampleApp.war
+```bash
+cf push <APP-NAME> -p <ARTIFACT> -b https://github.com/cloudfoundry/java-buildpack.git
 ```
 
 ## Examples
+The following are _very_ simple examples for deploying the artifact types that we support.
 
-Refer to [WlsSampleApp](resources/wls/WlsSampleApp.war), a sample web application packaged with sample configurations under the resources/wls folder of the buildpack.
-
-## Buildpack Development and Testing
-* There are 3 stages in the buildpack: `detect`, `compile` and `release`. These can be invoked manually for sandbox testing.
-  * Explode or extract the webapp or artifact into a folder
-  * Run the <weblogic-buildpack>/bin/detect <path-to-exploded-app>
-    * This should report successful detection on locating the **`.wls`** at the root of the folder
-
-    Sample output:
-    ```
-
-    $ ./bin/detect ../wlsSampleApp
-    weblogic=12.1.2 oracle-jre=1.7.0_51
-
-    ```
-
-  * Run the <weblogic-buildpack>/bin/**compile** <path-to-exploded-app> <tmp-folder>
-    * This should start the download and configuring of the JDK, WebLogic server and the WLS Domain based on configurations provided.
-    * If no temporary folder is provided as second argument during compile, it would report error.
-
-     ```ERROR Compile failed with exception #<RuntimeError: Application cache directory is undefined> ```
-
-    Sample output for successful run:
-
-    ```
-
-    $ ./bin/compile ../wlsSampleApp tmp1
-    -----> Java Buildpack source: https://github.com/pivotal-cf/weblogic-buildpack.git#2cf927f6632af73a5b4f55c591a3e3ce14f2378f
-    -----> Downloading Oracle JRE 1.7.0_51 from http://12.1.1.1:7777/fileserver/jdk/jre-7u51-linux-x64.tar.gz (0.1s)
-           Expanding Oracle JRE to .java-buildpack/oracle_jre "Got command tar xzf t1/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fjdk%2Fjre-7u51-linux-x64.tar.gz.cached -C /Users/sparameswaran/workspace/wlsSampleApp2/.java-buildpack/oracle_jre --strip 1 2>&1"
-    (0.6s)
-    -----> Downloading Weblogic 12.1.2 from http://12.1.1.1:7777/fileserver/wls/wls1212_dev.zip (0.8s)
-    -----> Expanding WebLogic to .java-buildpack/weblogic
-    (4.4s)
-    -----> Configuring WebLogic under .java-buildpack/weblogic
-           Warning!!! Running on Mac, cannot use linux java binaries downloaded earlier...!!
-           Trying to find local java instance on Mac
-           Warning!!! Using JAVA_HOME at /Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/jre/bin/..
-    -----> Finished configuring WebLogic Domain under .java-buildpack/weblogic/domains/cfDomain
-    (1m 34s)
-
-    ```
-
-  * Run the <weblogic-buildpack>/bin/**release** <path-to-exploded-app>
-    * This should report the final JVM parameters and or other java options and as well as execution script that would be used for the Droplet execution.
-
-    Sample output:
-
-    ```
-
-    $ ./bin/release ../wlsSampleApp
-    ---
-    addons: []
-    config_vars: {}
-    default_process_types:
-      web: JAVA_HOME=$PWD/.java-buildpack/oracle_jre USER_MEM_ARGS="-Xms512m -Xmx1024m
-        -XX:PermSize=128m -XX:MaxPermSize=256m  -verbose:gc -Xloggc:gc.log -XX:+PrintGCDetails
-        -XX:+PrintGCTimeStamps  -Dweblogic.ListenPort=$PORT -XX:OnOutOfMemoryError=$PWD/.java-buildpack/oracle_jre/bin/killjava.sh"
-        /bin/sh ./setupPathsAndEnv.sh; /Users/sparameswaran/workspace/wlsSampleApp/.java-buildpack/weblogic/domains/cfDomain/startWebLogic.sh
-
-    ```
-* The buildpack would log the status and progress during the various execution stages into the .java-buildpack.log folder underneath the exploded-app directory.
-  This can be quite useful to debugging any issues or changes.
-* The complete JDK/JRE and WebLogic Server install as well as the domain would be created under the .java-buildpack folder of the exploded application.
-
-  Structure of the App, JDK and WLS Domain
-
-  ```
-
-  Exploded WebApp Root
-     |-META-INF
-     |-WEB-INF
-     |--lib
-     |-.wls                       <----------- WLS configuration folder referred by weblogic-buildpack
-     |--foreignjms
-     |--jdbc
-     |--jms
-     |--jvm
-     |--security
-     |--script                    <----------- WLST python script goes here
-     |-.java-buildpack.log        <----------- buildpack log file
-     |-.java-buildpack            <----------- buildpack created folder
-     |--oracle_jre                <----------- JRE install·
-     |----bin
-     |----lib
-     |--weblogic                  <----------- weblogic install
-     |----domains
-     |------cfDomain              <----------- weblogic domain
-     |--------app
-     |----------ROOT              <----------- Root of App deployed to server
-     |--------autodeploy
-     |--------config
-     |----wls12120                <----------- wl_home
-     |------coherence
-     |------logs
-     |------oracle_common
-     |------wlserver
-
-  ```
-
-## Running WLS with limited footprint 
-
-The generated weblogic server can be configured to run with a limited runtime footprint by avoiding certain subsystems like  EJB, JMS, JCA etc.  This option is controlled by the **startInWlxMode** flag within the weblogic-buildpack [config](docs/container-wls.md) 
-
-      ```
-      version: 12.1.+
-      repository_root: "http://12.1.1.1:7777/fileserver/wls"
-      preferAppConfig: false
-      startInWlxMode: false
-      ```
-
-
-Setting the **startInWlxMode** to true would disable the EJB, JMS and JCA layers and reducing the overall memory footprint required by WLS Server. This is ideal for running pure web applications that don't use EJBs or messaging.  If there are any EJBs or jms modules/destinations configured, the activation of the resources will result in errors at server startup.
-
-Setting the **startInWlxMode** to false would allow the full blown server mode.
-
-Please refer to the WebLogic server documentation on the [limited footprint][] option for more details.
-
-## Overriding App Bundled Configuration
-
-The **`preferAppConfig`** parameter specified inside the [weblogic.yml](config\weblogic.yml) config file of the buildpack controls whether the buildpack or application bundled config should be used for Domain creation.
-
-The weblogic-buildpack can override the app bundled configuration for subsystems like jdbc, jms etc.
-The script for generating the domain would be pulled from the buildpack configuration (under resources/wls/script).
-
-But the name of the domain, server and user credentials would be pulled from Application bundled config files so each application can be named differently.
-The jvm configuration would also be pulled from the app bundled config (for app specific memory requirements).
-
-
-      ```
-      version: 12.1.+
-      repository_root: "http://12.1.1.1:7777/fileserver/wls"
-      preferAppConfig: false
-
-      ```
-
-Setting the  **`preferAppConfig`** to **`true`** would imply the app bundled configs (under .wls of the App Root) would always be used for final domain creation.
-Setting the parameter to **`false`** would imply the buildpack's configurations (under resources\wls\) have higher precedence over the app bundled configs and be used to configure the domain.
-The Application supplied domain config and jvm config file would be used for names of the domain, server, user credentials and jvm memory and command line settings.
-
-For users starting to experiment with the buildpack and still tweaking and reconfiguring the generated domain, **`preferAppConfig` should be enabled so they can experiment more easily**.
-This would allow the app developer to quickly change/rebuild the domain to achieve the desired state rather than pushing changes to buildpack and redeploy the application also each time.
-
-**On reaching the desired domain configuration state (Golden state), save the configurations and scripts into the buildpack and disable the `preferAppConfig` parameter when no further changes are allowed or necessary to the domain.
-One can also modify the domain creation script to lock down or block access to the WebLogic Admin Console or override the domain passwords, once the desired domain configuration has been achieved.**
-
-*Note:
- The Cloud Foundry services that are injected as part of the registered Service Bindings for the application would still be used to create related services during application deployment.
- The Domain Administrators are expected to use the Service Bindings to manage/control the services that are exposed to the application as it moves through various stages (Dev, Test, PreProd, Prod).
+* [Grails](docs/example-grails.md)
+* [Groovy](docs/example-groovy.md)
+* [Java Main](docs/example-java_main.md)
+* [Play Framework](docs/example-play_framework.md)
+* [Servlet](docs/example-servlet.md)
+* [Spring Boot CLI](docs/example-spring_boot_cli.md)
 
 ## Configuration and Extension
 The buildpack supports configuration and extension through the use of Git repository forking.  The easiest way to accomplish this is to use [GitHub's forking functionality][] to create a copy of this repository.  Make the required configuration and extension changes in the copy of the repository.  Then specify the URL of the new repository when pushing Cloud Foundry applications.  If the modifications are generally applicable to the Cloud Foundry community, please submit a [pull request][] with the changes.
 
 To learn how to configure various properties of the buildpack, follow the "Configuration" links below. More information on extending the buildpack is available [here](docs/extending.md).
+
+## Additional Documentation
+* [Design](docs/design.md)
+* [Security](docs/security.md)
+* Standard Containers
+	* [Groovy](docs/container-groovy.md) ([Configuration](docs/container-groovy.md#configuration))
+	* [Java Main](docs/container-java_main.md) ([Configuration](docs/container-java_main.md#configuration))
+	* [Play Framework](docs/container-play_framework.md)
+	* [Ratpack](docs/container-ratpack.md)
+	* [Spring Boot CLI](docs/container-spring_boot_cli.md) ([Configuration](docs/container-spring_boot_cli.md#configuration))
+	* [Tomcat](docs/container-tomcat.md) ([Configuration](docs/container-tomcat.md#configuration))
+* Standard Frameworks
+	* [AppDynamics Agent](docs/framework-app_dynamics_agent.md) ([Configuration](docs/framework-app_dynamics_agent.md#configuration))
+	* [Java Options](docs/framework-java_opts.md) ([Configuration](docs/framework-java_opts.md#configuration))
+	* [MariaDB JDBC](docs/framework-maria_db_jdbc.md) ([Configuration](docs/framework-maria_db_jdbc.md#configuration))
+	* [New Relic Agent](docs/framework-new_relic_agent.md) ([Configuration](docs/framework-new_relic_agent.md#configuration))
+	* [Play Framework Auto Reconfiguration](docs/framework-play_framework_auto_reconfiguration.md) ([Configuration](docs/framework-play_framework_auto_reconfiguration.md#configuration))
+	* [Play Framework JPA Plugin](docs/framework-play_framework_jpa_plugin.md) ([Configuration](docs/framework-play_framework_jpa_plugin.md#configuration))
+	* [PostgreSQL JDBC](docs/framework-postgresql_jdbc.md) ([Configuration](docs/framework-postgresql_jdbc.md#configuration))
+	* [Spring Auto Reconfiguration](docs/framework-spring_auto_reconfiguration.md) ([Configuration](docs/framework-spring_auto_reconfiguration.md#configuration))
+	* [Spring Insight](docs/framework-spring_insight.md)
+* Standard JREs
+	* [OpenJDK](docs/jre-open_jdk_jre.md) ([Configuration](docs/jre-open_jdk_jre.md#configuration))
+	* [Oracle](docs/jre-oracle_jre.md) ([Configuration](docs/jre-oracle_jre.md#configuration))
+* [Extending](docs/extending.md)
+	* [Application](docs/extending-application.md)
+	* [Droplet](docs/extending-droplet.md)
+	* [BaseComponent](docs/extending-base_component.md)
+	* [VersionedDependencyComponent](docs/extending-versioned_dependency_component.md)
+	* [ModularComponent](docs/extending-modular_component.md)
+	* [Caches](docs/extending-caches.md) ([Configuration](docs/extending-caches.md#configuration))
+	* [Logging](docs/extending-logging.md) ([Configuration](docs/extending-logging.md#configuration))
+	* [Repositories](docs/extending-repositories.md) ([Configuration](docs/extending-repositories.md#configuration))
+	* [Utiltities](docs/extending-utiltities.md)
+* Related Projects
+	* [Java Buildpack Dependency Builder](https://github.com/cloudfoundry/java-buildpack-dependency-builder)
+	* [Java Test Applications](https://github.com/cloudfoundry/java-test-applications)
+	* [Java Buildpack System Tests](https://github.com/cloudfoundry/java-buildpack-system-test)
+
+## Building Packages
+The buildpack can be packaged up so that it can uploaded to Cloud Foundry using the `cf create-buildpack` and `cf update-buildpack` commands.  In order to create these packages, the rake `package` task is used.
+
+### Online Package
+The online package is a version of the buildpack that is as minimal as possible and is configured to connect to the network for all dependencies.  This package is about 50K in size.  To create the online package, run:
+
+```bash
+bundle install
+bundle exec rake package
+...
+Creating build/java-buildpack-cfd6b17.zip
+```
+
+### Offline Package
+The offline package is a version of the buildpack designed to run without access to a network.  It packages the latest version of each dependency (as configured in the [`config/` directory][]) and [disables `remote_downloads`][]. This package is about 180M in size.  To create the offline package, use the `OFFLINE=true` argument:
+
+```bash
+bundle install
+bundle exec rake package OFFLINE=true
+...
+Creating build/java-buildpack-offline-cfd6b17.zip
+```
+
+### Package Versioning
+Keeping track of different versions of the buildpack can be difficult.  To help with this, the rake `package` task puts a version discriminator in the name of the created package file.  The default value for this discriminator is the current Git hash (e.g. `cfd6b17`).  To change the version when creating a package, use the `VERSION=<VERSION>` argument:
+
+```bash
+bundle install
+bundle exec rake package VERSION=2.1
+...
+Creating build/java-buildpack-2.1.zip
+```
+
+## Running Tests
+To run the tests, do the following:
+
+```bash
+bundle install
+bundle exec rake
+```
+
+[Running Cloud Foundry locally][] is useful for privately testing new features.
 
 ## Contributing
 [Pull requests][] are welcome; see the [contributor guidelines][] for details.
@@ -409,27 +115,16 @@ To learn how to configure various properties of the buildpack, follow the "Confi
 ## License
 This buildpack is released under version 2.0 of the [Apache License][].
 
+[`config/` directory]: config
 [Apache License]: http://www.apache.org/licenses/LICENSE-2.0
 [Cloud Foundry]: http://www.cloudfoundry.com
 [contributor guidelines]: CONTRIBUTING.md
+[disables `remote_downloads`]: docs/extending-caches.md#configuration
 [GitHub's forking functionality]: https://help.github.com/articles/fork-a-repo
 [Grails]: http://grails.org
 [Groovy]: http://groovy.codehaus.org
-[Installing Cloud Foundry on Vagrant]: http://blog.cloudfoundry.com/2013/06/27/installing-cloud-foundry-on-vagrant/
 [Play Framework]: http://www.playframework.com
 [pull request]: https://help.github.com/articles/using-pull-requests
 [Pull requests]: http://help.github.com/send-pull-requests
+[Running Cloud Foundry locally]: http://docs.cloudfoundry.org/deploying/run-local.html
 [Spring Boot]: http://projects.spring.io/spring-boot/
-[java-buildpack]: http://github.com/cloudfoundry/java-buildpack/
-[Oracle WebLogic Application Server]: http://www.oracle.com/technetwork/middleware/weblogic/overview/index.html
-[bosh-lite]: http://github.com/cloudfoundry/bosh-lite/
-[Pivotal Web Services Marketplace]: http://docs.run.pivotal.io/marketplace/services/
-[User Provided Services]: http://docs.run.pivotal.io/devguide/services/user-provided.html
-[Linux 64 bit JRE]: http://javadl.sun.com/webapps/download/AutoDL?BundleId=83376
-[WebLogic Server]: http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
-[limited footprint]: http://docs.oracle.com/middleware/1212/wls/START/overview.htm#START234
-
-=======
-weblogic-buildpack
-==================
-

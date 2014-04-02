@@ -20,7 +20,6 @@ $stderr.sync = true
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 require 'java_buildpack/buildpack'
-require 'java_buildpack/container/weblogic'
 
 
 build_dir = ARGV[0]
