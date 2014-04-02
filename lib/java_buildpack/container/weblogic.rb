@@ -42,6 +42,7 @@ module JavaBuildpack::Container
 
 
         @preferAppConfig = @configuration[PREFER_APP_CONFIG]
+        @startInWlxMode  = @configuration[START_IN_WLX_MODE]
 
         @wlsSandboxRoot           = @droplet.sandbox
         @wlsDomainPath            = @wlsSandboxRoot + WLS_DOMAIN_PATH
@@ -135,6 +136,9 @@ module JavaBuildpack::Container
     # Prefer App Bundled Config or Buildpack bundled Config
     PREFER_APP_CONFIG           = 'preferAppConfig'.freeze
 
+    # Prefer App Bundled Config or Buildpack bundled Config
+    START_IN_WLX_MODE           = 'startInWlxMode'.freeze
+
     # Following are relative to the .wls folder all under the APP ROOT
     WLS_SCRIPT_CACHE_DIR        = 'script'.freeze
     WLS_JVM_CONFIG_DIR          = 'jvm'.freeze
@@ -165,14 +169,6 @@ module JavaBuildpack::Container
 
     APP_NAME                 = 'ROOT'.freeze
 
-
-
-    #WLS_DOMAIN_CONFIG_YAML   = 'wlsDomainConfig.yml'.freeze
-    #WLS_DOMAIN_CONFIG_PROPS  = 'wlsDomainConfig.props'.freeze
-    #WLS_DOMAIN_CONFIG_SCRIPT = 'wlsDomainCreate.py'.freeze
-
-    #CONFIG_CACHE_DIRECTORY = Pathname.new(File.expand_path('../../../config', File.dirname(__FILE__))).freeze
-    #CONFIG_CACHE_DIRECTORY = Pathname.new(@application.root).freeze
 
     # @return [Hash] the configuration or an empty hash if the configuration file does not exist
     def load(should_log = true)
@@ -298,7 +294,13 @@ module JavaBuildpack::Container
 
       @droplet.java_opts << otherJvmOpts
 
+      # Set the server listen port using the $PORT argument set by the warden container
       @droplet.java_opts.add_system_property 'weblogic.ListenPort', '$PORT'
+
+      # Check whether to start in Wlx Mode that would disable JMS, EJB and JCA
+      if @startInWlxMode
+        @droplet.java_opts.add_system_property 'serverType', 'wlx'
+      end
 
       logger.debug { "Consolidated Java Options for Server: #{@droplet.java_opts.join(' ')}" }
 
