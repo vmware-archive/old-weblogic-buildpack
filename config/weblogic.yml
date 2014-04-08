@@ -32,4 +32,4 @@ preferAppConfig: true
 # serverInWlxMode - Start the WLS Server in Limited Runtime footprint mode
 # If true, this would disable JMS, EJB and JCA layers and result in smaller memory footprints.
 # If false, this would start the server in full blown mode - enabling JMS, JCA and EJBs.
-serverInWlxMode: false
+startInWlxMode: false
