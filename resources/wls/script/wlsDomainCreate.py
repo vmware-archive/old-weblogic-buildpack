@@ -377,16 +377,17 @@ def createJmsConfig(jmsConfig, targetServer):
 # Deploy Apps
 #==========================================
 
-
-def deployApp(appName, appPath, targetServer):
+def deployApp(appName, appSrcPath, targetServer):
+ try:
   cd('/')
 
   app = create(appName, 'AppDeployment')
   cd('/AppDeployment/'+appName)
-  set('SourcePath', appPath )
+  set('SourcePath', appSrcPath )
   set('Target', targetServer)
-  print 'Deployed ' + appName + ' with source path: ' + appPath + ' to ' + targetServer
-
+  print 'Deployed ' + appName + ' with source path: ' + appSrcPath + ' to ' + targetServer
+ except:
+  dumpStack()
 
 
 #==========================================
@@ -458,8 +459,8 @@ def configureDomain(domainConfigProps):
       createForeignJMSResources(foreignJmsConfig, targetServer)
 
   appName = domainEnvConfig.get('appName')
-  appPath = domainEnvConfig.get('appSrcPath')
-  deployApp(appName, appPath, targetServer)
+  appSrcPath = domainEnvConfig.get('appSrcPath')
+  deployApp(appName, appSrcPath, targetServer)
 
   updateDomain()
   closeDomain()

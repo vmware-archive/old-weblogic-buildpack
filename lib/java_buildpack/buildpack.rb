@@ -91,7 +91,7 @@ module JavaBuildpack
 
     private
 
-    BUILDPACK_MESSAGE = '-----> Java Buildpack Version: %s'.freeze
+    BUILDPACK_MESSAGE = '-----> WebLogic Buildpack Version: %s'.freeze
 
     LOAD_ROOT = Pathname.new(__FILE__).dirname + '..'
 

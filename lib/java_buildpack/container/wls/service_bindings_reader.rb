@@ -19,7 +19,7 @@ require 'java_buildpack/container'
 require 'pathname'
 require 'yaml'
 
-module JavaBuildpack::Container
+module JavaBuildpack::Container::Wls
 
   class ServiceBindingsReader
 
@@ -310,7 +310,7 @@ module JavaBuildpack::Container
 
 
       def self.logger
-        JavaBuildpack::Logging::LoggerFactory.get_logger Weblogic
+        JavaBuildpack::Logging::LoggerFactory.get_logger JavaBuildpack::Container::Weblogic
       end
 
   end

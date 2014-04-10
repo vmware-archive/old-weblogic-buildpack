@@ -20,7 +20,7 @@ require 'java_buildpack/util/format_duration'
 require 'java_buildpack/util/java_main_utils'
 require 'java_buildpack/component/versioned_dependency_component'
 require 'java_buildpack/component/java_opts'
-require 'java_buildpack/container/service_bindings_reader'
+require 'java_buildpack/container/wls/service_bindings_reader'
 require 'yaml'
 require 'tmpdir'
 
@@ -82,7 +82,7 @@ module JavaBuildpack::Container
       download_wls
       configure
       link_to(@application.root.children, root)
-      @droplet.additional_libraries.link_to web_inf_lib
+      #@droplet.additional_libraries.link_to web_inf_lib
       create_dodeploy
     end
 
@@ -436,8 +436,8 @@ module JavaBuildpack::Container
       # along with anything else that comes via the Service Bindings via the environment (VCAP_SERVICES) during staging/execution of the droplet.
 
       system "/bin/rm  #{@wlsCompleteDomainConfigsProps} 2>/dev/null"
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
 
@@ -474,8 +474,8 @@ module JavaBuildpack::Container
 
       configCacheRoot = determineConfigCacheLocation
 
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
-      JavaBuildpack::Container::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
+      JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
 

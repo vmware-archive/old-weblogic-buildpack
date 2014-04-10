@@ -150,7 +150,40 @@ Please refer to [Overriding App Bundled Configuration](#overriding-app-bundled-c
               .wls/security/
               .wls/security/securityConfig.yml
               .wls/wlsDomainConfig.yml
-			  
+
+       ```
+
+     Sample Enterprise Application (EAR) structure
+     ```
+
+              META-INF/
+              META-INF/MANIFEST.MF
+              META-INF/application.xml
+              APP-INF/
+              APP-INF/lib/
+              APP-INF/classes
+              webapp1.war
+              webapp2.war
+              .wls/
+              .wls/foreignjms/
+              .wls/foreignjms/foreignJmsConfig1.yml
+              .wls/jdbc/
+              .wls/jdbc/jdbcDatasource1.yml
+              .wls/jdbc/jdbcDatasource2.yml
+              .wls/jms/
+              .wls/jms/jmsConfig.yml
+              .wls/jvm/
+              .wls/jvm/jvmConfig.yml
+              .wls/postJars/
+              .wls/postJars/README.txt
+              .wls/preJars/
+              .wls/preJars/README.txt
+              .wls/script/
+              .wls/script/wlsDomainCreate.py
+              .wls/security/
+              .wls/security/securityConfig.yml
+              .wls/wlsDomainConfig.yml
+
        ```
 
    * Domain configuration (Required)
@@ -248,7 +281,7 @@ cf push wlsSampleApp -m 1024M -p wlsSampleApp.war
 
 ## Examples
 
-Refer to [WlsSampleApp](resources/wls/WlsSampleApp.war), a sample web application packaged with sample configurations under the resources/wls folder of the buildpack.
+Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web application packaged with sample configurations under the resources/wls folder of the buildpack. There is also a sample ear file [WlsSampleApp.ear](resources/wls/WlsSampleApp.ear) under the same location.
 
 ## Buildpack Development and Testing
 * There are 3 stages in the buildpack: `detect`, `compile` and `release`. These can be invoked manually for sandbox testing.
@@ -275,7 +308,7 @@ Refer to [WlsSampleApp](resources/wls/WlsSampleApp.war), a sample web applicatio
     ```
 
     $ ./bin/compile ../wlsSampleApp tmp1
-    -----> Java Buildpack source: https://github.com/pivotal-cf/weblogic-buildpack.git#2cf927f6632af73a5b4f55c591a3e3ce14f2378f
+    -----> WebLogic Buildpack source: https://github.com/pivotal-cf/weblogic-buildpack.git#2cf927f6632af73a5b4f55c591a3e3ce14f2378f
     -----> Downloading Oracle JRE 1.7.0_51 from http://12.1.1.1:7777/fileserver/jdk/jre-7u51-linux-x64.tar.gz (0.1s)
            Expanding Oracle JRE to .java-buildpack/oracle_jre "Got command tar xzf t1/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fjdk%2Fjre-7u51-linux-x64.tar.gz.cached -C /Users/sparameswaran/workspace/wlsSampleApp2/.java-buildpack/oracle_jre --strip 1 2>&1"
     (0.6s)
