@@ -7,7 +7,7 @@ A single server WebLogic Domain configuration wih deployed application would be 
 
 ## Requirements
 * WebLogic Server and JDK Binaries
-   * The WebLogic Server release bits and jdk binaries should be accessible for download from a server (can be internal or public facing) for the buildpack to create the necessary configurations along with the app bits.
+   * The WebLogic Server release bits and jdk binaries should be accessible for download from a user-defined server (can be internal or public facing) for the buildpack to create the necessary configurations along with the application bits.
      Download the [Linux 64 bit JRE][] version and [WebLogic Server][] generic version.
 
      For testing in a [bosh-lite][] environment, create a loopback alias on the machine so the download server hosting the binaries is accessible from the droplet container during staging.
@@ -250,7 +250,6 @@ Please refer to [Overriding App Bundled Configuration](#overriding-app-bundled-c
 To use this buildpack specify the URI of the repository when pushing an application to Cloud Foundry:
 
 ```
-bash
 cf push -b https://github.com/pivotal-cf/weblogic-buildpack <APP_NAME> -p <APP_BITS>
 ```
 
@@ -258,7 +257,6 @@ While working in sandbox env against Bosh-Lite, its also possible to use a modif
 **Note:** Use zip to create the buildpack (rather than jar) to ensure the detect, compile, release have execute permissions during the actual building of the app.
 
 ```
-bash
 cf create-buildpack java-buildpack-WLS java-buildpack-WLS.zip 1 --enable
 ```
 
@@ -275,7 +273,6 @@ Note: Ensure `cf push` uses **`-m`** argument to specify a minimum process memor
 Sample cf push: 
 
 ````
-bash
 cf push wlsSampleApp -m 1024M -p wlsSampleApp.war
 ```
 

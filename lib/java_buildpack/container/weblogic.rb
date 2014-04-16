@@ -184,6 +184,12 @@ module JavaBuildpack::Container
       configCacheRoot = determineConfigCacheLocation
 
       @wlsDomainYamlConfigFile  = Dir.glob("#{@appConfigCacheRoot}/*.yml")[0]
+
+      # If there is no Domain Config yaml file, use the buildpack bundled configs.
+      if (@wlsDomainYamlConfigFile.nil?)
+        @wlsDomainYamlConfigFile  = Dir.glob("#{@buildpackConfigCacheRoot}/*.yml")[0]
+      end
+
       domainConfiguration       = YAML.load_file(@wlsDomainYamlConfigFile)
       logger.debug { "WLS Domain Configuration: #{@wlsDomainYamlConfigFile}: #{domainConfiguration}" }
 
@@ -210,6 +216,12 @@ module JavaBuildpack::Container
 
       # For now, expecting only one script to be run to create the domain
       @wlsDomainConfigScript    = Dir.glob("#{configCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
+
+      # If there is no Domain Script, use the buildpack bundled script.
+      if (@wlsDomainConfigScript.nil?)
+        @wlsDomainConfigScript  = Dir.glob("#{@buildpackConfigCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
+      end
+
 
       logger.debug { "Configurations for WLS Domain" }
       logger.debug { "--------------------------------------" }
@@ -238,6 +250,11 @@ module JavaBuildpack::Container
 
       # Expect only one server instance to run, so there can be only one jvm config
       @wlsJvmConfigFile         = Dir.glob("#{@appConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
+
+      # If there is no Domain Script, use the buildpack bundled script.
+      if (@wlsJvmConfigFile.nil?)
+        @wlsJvmConfigFile = Dir.glob("#{@buildpackConfigCacheRoot}/#{WLS_JVM_CONFIG_DIR}/*.yml")[0]
+      end
 
       if !@wlsJvmConfigFile.nil?
 
