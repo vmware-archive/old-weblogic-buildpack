@@ -11,3 +11,7 @@ Domain:
   wlsPasswd: welcome1
   consoleEnabled: true
   prodModeEnabled: false
+  wlsHome: /Users/sparameswaran/workspace/wlsSampleApp/.java-buildpack/weblogic/wls12120/wlserver
+  domainPath: /Users/sparameswaran/workspace/wlsSampleApp/.java-buildpack/weblogic/domains/
+  appName: ROOT
+  appSrcPath: /Users/sparameswaran/workspace/wlsSampleApp/.java-buildpack/weblogic/domains/cfDomain/apps/ROOT

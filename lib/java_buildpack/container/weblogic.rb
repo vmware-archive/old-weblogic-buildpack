@@ -34,8 +34,6 @@ module JavaBuildpack::Container
     def initialize(context)
       super(context)
 
-
-
       if supports?
         @wls_version, @wls_uri = JavaBuildpack::Repository::ConfiguredItem
         .find_item(@component_name, @configuration) { |candidate_version| candidate_version.check_size(3) }
@@ -538,7 +536,10 @@ module JavaBuildpack::Container
     end
 
     def wls?
-      (@application.root + APP_WLS_CONFIG_CACHE_DIR).exist?
+      searchPath = (@application.root).to_s + "/**/weblogic*xml"
+      wlsConfigPresent = Dir.glob(searchPath).length > 0
+
+      ((@application.root + APP_WLS_CONFIG_CACHE_DIR).exist? || wlsConfigPresent)
     end
 
     # Determine which configurations should be used for driving the domain creation - App or buildpack bundled configuration

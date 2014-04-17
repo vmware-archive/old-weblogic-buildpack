@@ -228,7 +228,6 @@ def createForeignJMSResources(foreignJmsConfig, targetServer):
   cd('ForeignServer/'+jmsForeignServer)
   foreignJmsServer.setDefaultTargetingEnabled(true)
 
-  #set('InitialContextFactory', ini_fac)
   #set('ConnectionURL', url)
   #set('JNDIPropertiesCredentialEncrypted')
 

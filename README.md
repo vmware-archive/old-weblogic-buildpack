@@ -3,9 +3,38 @@
 The **`weblogic-buildpack`** is a [Cloud Foundry][] buildpack for running JVM-based web applications on [Oracle WebLogic Application Server][].  It is designed to run WebLogic-based web or ear applications with minimal configuration on CloudFoundry.
 This buildpack is based on a fork of the [java-buildpack][].
 
-A single server WebLogic Domain configuration wih deployed application would be created by the buildpack. The complete bundle of the server and application bits would be used to create a droplet for execution within Cloud Foundry.
+A single server WebLogic Domain configuration with deployed application would be created by the buildpack. The complete bundle of the server and application bits would be used to create a droplet for execution within Cloud Foundry.
+
+## Features
+
+* Download and install Oracle WebLogic and JDK binaries from a user-configured location.
+
+* Configure a single server default WebLogic Domain. Configuration of the domain and subsystems would be determined by the configuration bundled with the application or the buildpack.
+
+* The JVM settings like memory, heap, gc logging can be configured on a per app basis without modifying the buildpack.
+
+* JDBC Datasources and JMS services are supported with domain configuration options.
+
+* WebLogic Server can be configured to run in limited footprint mode (no support for EJB, JMS, known as WLX mode) or in full mode.
+
+* Standard domain configurations are supported and able to be overridden by the application or the buildpack.
+
+* Scale of the application via ‘cf scale’, not through increasing number of managed servers in the domain.
+
+* The Application can be a single WAR (Web Archive) or EAR (multiple war/jar modules bundled within one Enterprise Archive).
+
+* Its possible to expose the WebLogic Admin Console as another application, all within the overall context of the CF application endpoint (like testapps.xip.io)
+
+* JDBC Datasources will be dynamically created based on Cloud Foundry Services bound to the application.
+
+* Option to bundle patches, drivers, dependencies into the server classpath as needed.
+
+* CF machinery will monitor and automatically take care of restarts as needed, rather than relying on WebLogic Node Manager.
+
+* Its possible to bundle different configurations (like heap or jdbc pool sizes etc) for various deployments (Dev, Test, Staging, Prod) and have complete control over the configuration that goes into the domain and or recreate the same domain every time.
 
 ## Requirements
+
 * WebLogic Server and JDK Binaries
    * The WebLogic Server release bits and jdk binaries should be accessible for download from a user-defined server (can be internal or public facing) for the buildpack to create the necessary configurations along with the application bits.
      Download the [Linux 64 bit JRE][] version and [WebLogic Server][] generic version.
@@ -35,7 +64,7 @@ A single server WebLogic Domain configuration wih deployed application would be 
        ```
        Ensure the JRE binary is available at the location indicated by the index.yml referred by the jre repository_root
 
-   * Edit the repository_root of [weblogic.yml](config/weblogic.yml) to point to the server hosting the weblogic binary.
+   * Edit the repository_root of [weblogic.yml](config/weblogic.yml) to point to the server hosting the WebLogic binary.
 
      Sample **`repository_root`** for weblogic.yml (under weblogic-buildpack/config)
 
@@ -47,13 +76,34 @@ A single server WebLogic Domain configuration wih deployed application would be 
       ```
 
 	  The buildpack would look for an **`index.yml`** file at the specified **repository_root** for obtaining WebLogic related bits.
-	  The index.yml at the repository_root location should have a entry matching the weblogic server version and the corresponding release bits
+	  The index.yml at the repository_root location should have a entry matching the WebLogic server version and the corresponding release bits
 
       ```
         ---
           12.1.2: http://12.1.1.1:7777/fileserver/wls/wls1212_dev.zip
       ```
-      Ensure the WebLogic Server binary is available at the location indicated by the index.yml referred by the weblogic repository_root
+      Ensure the WebLogic Server binary is available at the location indicated by the index.yml referred by the weblogic repository_root.
+
+      If one has to use a different version (like 10.3.6), make the binaries available on the fileserver location and update the index.yml to include the version and binary location.
+      Sample index.yml file content when the file server is hosting the binaries of both 10.3.6 and 12.1.2 versions:
+
+      ```
+        ---
+          12.1.2: http://12.1.1.1:7777/fileserver/wls/wls1212_dev.zip
+          10.3.6: http://12.1.1.1:7777/fileserver/wls/wls1036_dev.zip
+      ```
+
+      Update the weblogic.yml (under weblogic-buildpack/config) in buildpack to use the correct version.
+
+      ```
+      version: 10.3.6
+      repository_root: "http://12.1.1.1:7777/fileserver/wls"
+      ```
+
+      Use **`10.3.+`** notation if the server should the latest version under the 10.3 series.
+      So, if both 10.3.6 and 10.3.7 binaries are available, the buildpack will automatically choose 10.3.7 over 10.3.6.
+
+      Similarly, update the oracle_jre.yml as needed to switch between versions (while also updating the index.yml to point to the other available versions of jdk).
 
 
 * Cloud Foundry Release version and manifest update
@@ -82,7 +132,7 @@ A single server WebLogic Domain configuration wih deployed application would be 
      
 	 ```
 	 
-     The Cloud Foundry DEA droplet containing a zip of the full weblogic server, JDK/JRE binaries and app bits would exceed 520 MB in size. The *`client_max_body_size`* limit of *256M* would limit the droplet transfer to Cloud Controller and failure during staging.
+     The Cloud Foundry DEA droplet containing a zip of the full WebLogic server, JDK/JRE binaries and app bits would exceed 520 MB in size. The *`client_max_body_size`* limit of *256M* would limit the droplet transfer to Cloud Controller and failure during staging.
      The *`client_max_body_size`* attribute within the cf-manifest file should be updated to allow *750MB (or higher)* depending on size of the application bits.
 
      Sample manifest with updated *client_max_body_size*:
@@ -111,8 +161,10 @@ A single server WebLogic Domain configuration wih deployed application would be 
 
      * CF Releases prior to **`v157`** used to hardcode the *`client_max_body_size`* to *256M*. So, overriding it with the manifest entry will not work unless the bosh-lite or hosting environment has been updated to *`v158`* or higher Cloud Foundry release.
 
-* Application configuration
+## Application configuration
+
 The buildpack looks for the presence of a **`.wls`** folder within the app at the root level as part of the detect call to proceed further.
+In the absence of the **`.wls`** folder, it will look for presence of weblogic*xml files to detect it as a WebLogic specific application.
 Additional configurations and scripts packaged within the **`.wls`** folder would determine the resulting WebLogic Domain and services configuration generated by the buildpack.
 
 The buildpack can override some of the configurations (jdbc/jms/..) while allowing only the app bundled domain config and jvm config to be used for droplet execution using **preferAppConfig** setting.
@@ -247,6 +299,7 @@ Please refer to [Overriding App Bundled Configuration](#overriding-app-bundled-c
 
 
 ## Usage
+
 To use this buildpack specify the URI of the repository when pushing an application to Cloud Foundry:
 
 ```
@@ -257,16 +310,18 @@ While working in sandbox env against Bosh-Lite, its also possible to use a modif
 **Note:** Use zip to create the buildpack (rather than jar) to ensure the detect, compile, release have execute permissions during the actual building of the app.
 
 ```
-cf create-buildpack java-buildpack-WLS java-buildpack-WLS.zip 1 --enable
+cf create-buildpack weblogic-buildpack weblogic-buildpack.zip 1 --enable
 ```
+
+This would allow CF to use the weblogic-buildpack ahead fo the pre-packaged java-buildpack (that uses Tomcat as the default Application Server).
 
 ## CF App Push
 A domain would be created based on the configurations and script passed with the app by the buildpack on `cf push` command.
 
-The droplet containing the entire weblogic install, domain and application bits would be get executed (with the app specified jvm settings and generated/configured services) by Cloud Foundry.
+The droplet containing the entire WebLogic install, domain and application bits would be get executed (with the app specified jvm settings and generated/configured services) by Cloud Foundry.
 A single server instance would be started as part of the droplet execution. The WebLogic Listen Port of the server would be controlled by the warden container managing the droplet.
 
-The application can be scaled up or down using cf scale command. This would trigger multiple copies of the same droplet (indentical server configuration and application bits but different server listen ports) to be executing in parallel.
+The application can be scaled up or down using cf scale command. This would trigger multiple copies of the same droplet (identical server configuration and application bits but different server listen ports) to be executing in parallel.
 
 Note: Ensure `cf push` uses **`-m`** argument to specify a minimum process memory footprint of 1024 MB (1GB). Failure to do so will result in very small memory size for the droplet container and the jvm startup can fail.
 
@@ -278,10 +333,11 @@ cf push wlsSampleApp -m 1024M -p wlsSampleApp.war
 
 ## Examples
 
-Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web application packaged with sample configurations under the resources/wls folder of the buildpack. There is also a sample ear file [WlsSampleApp.ear](resources/wls/WlsSampleApp.ear) under the same location.
+Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web application packaged with sample configurations under the resources/wls folder of the buildpack.
+There is also a sample ear file [WlsSampleApp.ear](resources/wls/WlsSampleApp.ear) under the same location.
 
 ## Buildpack Development and Testing
-* There are 3 stages in the buildpack: `detect`, `compile` and `release`. These can be invoked manually for sandbox testing.
+* There are 3 stages in the buildpack: **`detect`**, **`compile`** and **`release`**. These can be invoked manually for sandbox testing.
   * Explode or extract the webapp or artifact into a folder
   * Run the <weblogic-buildpack>/bin/detect <path-to-exploded-app>
     * This should report successful detection on locating the **`.wls`** at the root of the folder
@@ -289,8 +345,8 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
     Sample output:
     ```
 
-    $ ./bin/detect ../wlsSampleApp
-    weblogic=12.1.2 oracle-jre=1.7.0_51
+    $ weblogic-buildpack/bin/detect wlsSampleApp
+    oracle-jre=1.7.0_51 weblogic-buildpack=https://github.com/pivotal-cf/weblogic-buildpack.git#b0d5b21 weblogic=12.1.2
 
     ```
 
@@ -304,7 +360,7 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
 
     ```
 
-    $ ./bin/compile ../wlsSampleApp tmp1
+    $ weblogic-buildpack/bin/compile wlsSampleApp tmp1
     -----> WebLogic Buildpack source: https://github.com/pivotal-cf/weblogic-buildpack.git#2cf927f6632af73a5b4f55c591a3e3ce14f2378f
     -----> Downloading Oracle JRE 1.7.0_51 from http://12.1.1.1:7777/fileserver/jdk/jre-7u51-linux-x64.tar.gz (0.1s)
            Expanding Oracle JRE to .java-buildpack/oracle_jre "Got command tar xzf t1/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fjdk%2Fjre-7u51-linux-x64.tar.gz.cached -C /Users/sparameswaran/workspace/wlsSampleApp2/.java-buildpack/oracle_jre --strip 1 2>&1"
@@ -328,7 +384,7 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
 
     ```
 
-    $ ./bin/release ../wlsSampleApp
+    $ weblogic-buildpack/bin/release wlsSampleApp
     ---
     addons: []
     config_vars: {}
@@ -339,8 +395,10 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
         /bin/sh ./setupPathsAndEnv.sh; /Users/sparameswaran/workspace/wlsSampleApp/.java-buildpack/weblogic/domains/cfDomain/startWebLogic.sh
 
     ```
+
 * The buildpack would log the status and progress during the various execution stages into the .java-buildpack.log folder underneath the exploded-app directory.
-  This can be quite useful to debugging any issues or changes.
+  This log can be quite useful to debugging any issues or changes.
+
 * The complete JDK/JRE and WebLogic Server install as well as the domain would be created under the .java-buildpack folder of the exploded application.
 
   Structure of the App, JDK and WLS Domain
@@ -363,9 +421,9 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
      |--oracle_jre                <----------- JRE install·
      |----bin
      |----lib
-     |--weblogic                  <----------- weblogic install
+     |--weblogic                  <----------- WebLogic install
      |----domains
-     |------cfDomain              <----------- weblogic domain
+     |------cfDomain              <----------- WebLogic domain
      |--------app
      |----------ROOT              <----------- Root of App deployed to server
      |--------autodeploy
@@ -380,7 +438,7 @@ Refer to [WlsSampleWar](resources/wls/WlsSampleApp.war), a sample web applicatio
 
 ## Running WLS with limited footprint 
 
-The generated weblogic server can be configured to run with a limited runtime footprint by avoiding certain subsystems like  EJB, JMS, JCA etc.  This option is controlled by the **startInWlxMode** flag within the weblogic-buildpack [config](docs/container-wls.md) 
+The generated WebLogic server can be configured to run with a limited runtime footprint by avoiding certain subsystems like  EJB, JMS, JCA etc.  This option is controlled by the **startInWlxMode** flag within the weblogic-buildpack [config](docs/container-wls.md)
 
       ```
       version: 12.1.+
@@ -429,9 +487,32 @@ One can also modify the domain creation script to lock down or block access to t
  The Domain Administrators are expected to use the Service Bindings to manage/control the services that are exposed to the application as it moves through various stages (Dev, Test, PreProd, Prod).
 
 ## Configuration and Extension
+
 The buildpack supports configuration and extension through the use of Git repository forking.  The easiest way to accomplish this is to use [GitHub's forking functionality][] to create a copy of this repository.  Make the required configuration and extension changes in the copy of the repository.  Then specify the URL of the new repository when pushing Cloud Foundry applications.  If the modifications are generally applicable to the Cloud Foundry community, please submit a [pull request][] with the changes.
 
 To learn how to configure various properties of the buildpack, follow the "Configuration" links below. More information on extending the buildpack is available [here](docs/extending.md).
+
+## Limitations (as of April, 2014)
+
+* CF release version should be equal or greater than v158 to allow overriding the client_max_body_size for droplets (the default is 256MB which is too small for WebLogic droplets).
+
+* Only HTTP inbound traffic is allowed. No inbound RMI communication is allowed. There cannot be any peer-to-peer communication between WebLogic Server instances.
+
+* There is no support for multiple servers or clusters within the domain. An admin server would be running with the application(s) deployed to it. In-memory session replication/high-availability is not supported.
+
+* Only stateless applications are supported.
+  * The server will start with a brand new image (on an entirely different VM possibly) on restarts and hence it cannot rely on state of previous runs.
+  The file system is ephemeral and will be reset after a restart of the server instance. This means Transaction recovery is not supported after restarts.
+  This also includes no support for messaging using persistent file stores.
+  WebLogic LLR for saving transaction logs on database and JDBC JMS store options are both not possible as the identify of the server would be unique and different on each run.
+
+* Changes made via the WebLogic Admin Console will not persist across restarts for the same reasons mentioned previously, domain customizations should be made at staging time using the buildpack configuration options.
+
+* Server logs are transient and are not available across restarts on the container file system, however can have Cloud Foundry loggregator send logs to a [syslog drain endpoint like Splunk][].
+
+* The buildpack does not handle security aspects (Authentication or Authorization). It only uses the embedded ldap server for creating and using the single WebLogic Admin user. Its possible to extend apply security policies by tweaking the domain creation.
+
+* Only base WebLogic domains are currently supported. There is no support for other layered products like SOA Suite, Web Center or IDM in the buildpack.
 
 ## Contributing
 [Pull requests][] are welcome; see the [contributor guidelines][] for details.
@@ -458,6 +539,7 @@ This buildpack is released under version 2.0 of the [Apache License][].
 [Linux 64 bit JRE]: http://javadl.sun.com/webapps/download/AutoDL?BundleId=83376
 [WebLogic Server]: http://www.oracle.com/technetwork/middleware/weblogic/downloads/index.html
 [limited footprint]: http://docs.oracle.com/middleware/1212/wls/START/overview.htm#START234
+[syslog drain endpoint like Splunk]: http://www.youtube.com/watch?v=rk_K_AAHEEI
 
 =======
 weblogic-buildpack

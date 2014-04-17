@@ -23,8 +23,14 @@ module JavaBuildpack::Jre
   # Encapsulates the detect, compile, and release functionality for selecting an Oracle JRE.
   class OracleJRE < OpenJDKLike
 
+    # Expect to see a '.wls' folder containing domain configurations and script to create the domain within the App bits
+    APP_WLS_CONFIG_CACHE_DIR       = '.wls'.freeze
+
     def supports?
-      (@application.root + '.wls').exist?
+      searchPath = (@application.root).to_s + "/**/weblogic*xml"
+      wlsConfigPresent = Dir.glob(searchPath).length > 0
+
+      ((@application.root + APP_WLS_CONFIG_CACHE_DIR).exist? || wlsConfigPresent)
     end
 
   end

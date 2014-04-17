@@ -59,7 +59,7 @@ Sample foreign jms config (from [foreignJmsConfig.yml](resources/wls/foreignjms/
 #  cfs: jms/cf/LocalQXACF|jms/cf/RemoteQXACF
 #
 # For jndi properties, use ';' as separator for various name-value pairs and '=' to denote the name/value.
-# Ensure the javax.namign... keys and values are correct
+# Ensure the javax.naming... keys and values are correct
 # For example:
 #    javax.naming.factory.initial=Initial_Context_Factory (can be jndi/ldap/fs context..)
 #    javax.naming.provider.url=REMOTE_URL_ENDPOINT or bindings file
@@ -70,7 +70,6 @@ Sample foreign jms config (from [foreignJmsConfig.yml](resources/wls/foreignjms/
 
 ForeignJMS-1:
   name: TestForeignJms
-  initialContextFactory: weblogic.jndi.WLInitialContextFactory
   #Provide all the related jndi connection, properties info.. under properties rather than individual entries
   jndiProperties: javax.naming.factory.initial=weblogic.jndi.WLInitialContextFactory;javax.naming.provider.url=t3://remoteHost:7001;javax.naming.security.principal=weblogic;javax.naming.security.credentials=weblogic
   destinations: jms/LocalQueueJNDIName|jms/RemoteQueueJNDIName;jms/LocalTopicJNDIName|jms/RemoteTopicJNDIName
