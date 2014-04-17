@@ -183,9 +183,12 @@ module JavaBuildpack::Container
 
       @wlsDomainYamlConfigFile  = Dir.glob("#{@appConfigCacheRoot}/*.yml")[0]
 
-      # If there is no Domain Config yaml file, use the buildpack bundled configs.
+      # If there is no Domain Config yaml file, copy over the buildpack bundled basic domain configs.
+      # Create the appConfigCacheRoot '.wls' directory under the App Root as needed
       if (@wlsDomainYamlConfigFile.nil?)
-        @wlsDomainYamlConfigFile  = Dir.glob("#{@buildpackConfigCacheRoot}/*.yml")[0]
+        system "mkdir #{@appConfigCacheRoot} 2>/dev/null; cp  #{@buildpackConfigCacheRoot}/*.yml #{@appConfigCacheRoot}"
+        @wlsDomainYamlConfigFile  = Dir.glob("#{@appConfigCacheRoot}/*.yml")[0]
+        #@wlsDomainYamlConfigFile  = Dir.glob("#{@buildpackConfigCacheRoot}/*.yml")[0]
       end
 
       domainConfiguration       = YAML.load_file(@wlsDomainYamlConfigFile)
@@ -203,7 +206,7 @@ module JavaBuildpack::Container
       wlsJdbcConfigFiles       = Dir.glob("#{configCacheRoot}/#{WLS_JDBC_CONFIG_DIR}/*.yml")
       wlsForeignJmsConfigFile  = Dir.glob("#{configCacheRoot}/#{WLS_FOREIGN_JMS_CONFIG_DIR}/*.yml")
 
-      @wlsCompleteDomainConfigsYml = [@wlsDomainYamlConfigFile ]
+      @wlsCompleteDomainConfigsYml = [ @wlsDomainYamlConfigFile ]
       @wlsCompleteDomainConfigsYml +=  wlsJdbcConfigFiles + wlsJmsConfigFiles + wlsForeignJmsConfigFile
 
       logger.debug { "Configuration files used for Domain creation: #{@wlsCompleteDomainConfigsYml}" }
@@ -369,7 +372,6 @@ module JavaBuildpack::Container
       FileUtils.rm_rf @wlsSandboxRoot
       FileUtils.mkdir_p @wlsSandboxRoot
 
-      #unzip_file(file.path, @wlsSandboxRoot)
       system "/usr/bin/unzip #{file.path} -d #{@wlsSandboxRoot} >/dev/null"
 
       puts "(#{(Time.now - expand_start_time).duration})"
@@ -432,8 +434,8 @@ module JavaBuildpack::Container
 
       end
 
+      print "       Starting WebLogic Install\n"
       logger.debug { "Starting WebLogic Install" }
-      print "       Starting WebLogic Install"
 
       system "export JAVA_HOME=#{@javaHome}; echo no |  #{configureScript} > #{@wlsInstall}/configureRun.log"
       logger.debug { "Finished running configure script, output saved at #{@wlsInstall}/configureRun.log" }
@@ -451,8 +453,10 @@ module JavaBuildpack::Container
       # along with anything else that comes via the Service Bindings via the environment (VCAP_SERVICES) during staging/execution of the droplet.
 
       system "/bin/rm  #{@wlsCompleteDomainConfigsProps} 2>/dev/null"
+
       JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromFileSet(@wlsCompleteDomainConfigsYml, configCacheRoot, @wlsCompleteDomainConfigsProps)
       JavaBuildpack::Container::Wls::ServiceBindingsReader.createServiceDefinitionsFromBindings(@appServicesConfig, @wlsCompleteDomainConfigsProps)
+
       logger.debug { "Done generating Domain Configuration Property file for WLST: #{@wlsCompleteDomainConfigsProps}" }
       logger.debug { "--------------------------------------" }
 

@@ -39,7 +39,6 @@ module JavaBuildpack::Container::Wls
           createServiceDefinitionsFromAppConfig(serviceEntry, moduleName, outputPropsFile)
         }
 
-
       }
     end
 
@@ -48,65 +47,55 @@ module JavaBuildpack::Container::Wls
 
       serviceConfig.each { |serviceEntry|
 
-        logger.debug {  "Processing Service Binding Definition : #{serviceEntry}" }
+        serviceType = serviceEntry["label"]
 
-        if (serviceEntry[0][/cleardb/])
+        print "-----> Processing Service Binding of type: #{serviceType} and definition : #{serviceEntry} \n"
+        logger.debug {  "Processing Service Binding of type: #{serviceType} and definition : #{serviceEntry} " }
 
-          mySqlConfigs = serviceEntry[1]
+        if (serviceType[/cleardb/])
 
-          mySqlConfigs.each { |mysqlConfig|
+          mySqlConfig = serviceEntry
 
-            createJdbcServiceDefinition(mysqlConfig, outputPropsFile)
-          }
+          createJdbcServiceDefinition(mySqlConfig, outputPropsFile)
+
+        elsif (serviceType[/elephantsql/])
+
+          postgresConfig = serviceEntry
+
+          createJdbcServiceDefinition(postgresConfig, outputPropsFile)
 
 
-        elsif (serviceEntry[0][/elephantsql/])
+        elsif (serviceType[/cloudamqp/])
 
-          postgresConfigs = serviceEntry[1]
+          amqpConfig = serviceEntry
 
-          postgresConfigs.each { |postgresConfig|
+          saveAMQPJMSServiceDefinition(amqpConfig, outputPropsFile)
 
-            createJdbcServiceDefinition(postgresConfig, outputPropsFile)
 
-          }
+        elsif (serviceType[/user-provided/])
 
-        elsif (serviceEntry[0][/cloudamqp/])
+          userDefinedService = serviceEntry
 
-          amqpConfigs = serviceEntry[1]
+          if userDefinedService.to_s[/jdbc/]
 
-          amqpConfigs.each { |amqpConfig|
+            # This appears to be of type JDBC
+            createJdbcServiceDefinition(userDefinedService, outputPropsFile)
 
-            saveAMQPJMSServiceDefinition(amqpConfig, outputPropsFile)
+          elsif userDefinedService.to_s[/amqp/]
 
-          }
+            # This appears to be of type AMQP
+            saveAMQPJMSServiceDefinition(userDefinedService, outputPropsFile)
 
-        elsif (serviceEntry[0][/user-provided/])
+          else
 
-          userDefinedServiceConfigs = serviceEntry[1]
+            print "       Unknown User defined Service bindings !!!... #{userDefinedService.to_s}\n"
+            logger.debug { "Unknown User defined Service bindings !!!... #{userDefinedService.to_s}" }
 
-          userDefinedServiceConfigs.each { |userDefinedService|
-
-            if userDefinedService.to_s[/jdbc/]
-
-              # This appears to be of type JDBC
-              createJdbcServiceDefinition(userDefinedService, outputPropsFile)
-
-            elsif userDefinedService.to_s[/amqp/]
-
-              # This appears to be of type AMQP
-              saveAMQPJMSServiceDefinition(userDefinedService, outputPropsFile)
-
-            else
-
-              p "Unknown User defined Service bindings !!!... #{userDefinedService.to_s}"
-              logger.debug { "Unknown User defined Service bindings !!!... #{userDefinedService.to_s}" }
-
-            end
-          }
+          end
 
         else
 
-          p "Unknown Service bindings !!!... #{serviceEntry.to_s}"
+          print "       Unknown Service bindings !!!... #{serviceEntry.to_s}\n"
           logger.debug { "Unknown Service bindings !!!... #{serviceEntry.to_s}" }
 
         end
@@ -118,8 +107,8 @@ module JavaBuildpack::Container::Wls
 
     def self.createServiceDefinitionsFromAppConfig(serviceConfig, moduleName, outputPropsFile )
 
+      print "-----> Processing App bundled Service Definition : #{serviceConfig}\n"
       logger.debug {  "Processing App bundled Service Definition : #{serviceConfig}" }
-
 
       serviceName     = serviceConfig[0]
       subsystemConfig = serviceConfig[1]
@@ -162,7 +151,9 @@ module JavaBuildpack::Container::Wls
 
       else
 
+        print "       Unknown subsystem, just saving it : #{subsystemConfig}\n"
         logger.debug { "Unknown subsystem, just saving it : #{subsystemConfig}"}
+
         # Dont know what subsystem this relates to, just save it as Section matching its serviceName
         saveBaseServiceDefinition(subsystemConfig, outputPropsFile, serviceName)
 
@@ -277,9 +268,7 @@ module JavaBuildpack::Container::Wls
         f.puts ""
         f.puts "[ForeignJMS-AQMP-#{amqpService['name']}]"
         f.puts "name=#{amqpService['name']}"
-        f.puts "jndiProperties=javax.naming.factory.initial=org.apache.qpid.amqp_1_0.jms.jndi.PropertiesFileInitialContextFactory;"
-                + "javax.naming.provider.url=#{amqpService['credentials']['uri']}"
-                + "uri=#{amqpService['credentials']['uri']}"
+        f.puts "jndiProperties=javax.naming.factory.initial=org.apache.qpid.amqp_1_0.jms.jndi.PropertiesFileInitialContextFactory;" + "javax.naming.provider.url=" + "#{amqpService['credentials']['uri']}" + "uri=#{amqpService['credentials']['uri']}"
         f.puts ""
 
       end
