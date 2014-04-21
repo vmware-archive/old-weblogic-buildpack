@@ -1,0 +1,389 @@
+# Logfile created on 2014-04-21 11:13:45 -0700 by logger.rb/44203
+2014-04-21T11:18:45.88-0700 [ConfigurationUtils]             DEBUG Configuration from /Users/sparameswaran/workspace/weblogic-buildpack/config/cache.yml: {"remote_downloads"=>"enabled"}
+2014-04-21T11:18:45.88-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.32-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.32-0700 [DownloadCache]                  DEBUG Request: /groovy/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Persisting etag: "d374edc3ae561f50674d82120950847a"
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 18 Mar 2014 16:18:34 GMT
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fgroovy%2Findex.yml.cached
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Validated content size 3914 is 3914
+2014-04-21T11:18:54.44-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.52-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.52-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:54.63-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:54.63-0700 [DownloadCache]                  DEBUG Persisting etag: "67f05421632494a834a51b0a7a057db4"
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 07 Apr 2014 08:24:29 GMT
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fspring-boot-cli%2Findex.yml.cached
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Validated content size 1102 is 1102
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting last-modified: Thu, 17 Apr 2014 17:40:42 GMT
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fwls%2Findex.yml.cached
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Validated content size 184 is 184
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting last-modified: Thu, 27 Mar 2014 17:16:51 GMT
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fjdk%2Findex.yml.cached
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Validated content size 76 is 76
+2014-04-21T11:18:54.64-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.72-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.72-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Persisting etag: "d082b51a94ab7fe75edcd5aac27dca56"
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 14 Apr 2014 12:05:14 GMT
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fapp-dynamics%2Findex.yml.cached
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Validated content size 2396 is 2396
+2014-04-21T11:18:54.84-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:54.93-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:54.93-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Persisting etag: "9801e88633bf0222339affd1995914ea"
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 07 Apr 2014 08:21:38 GMT
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fmariadb-jdbc%2Findex.yml.cached
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Validated content size 374 is 374
+2014-04-21T11:18:55.03-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:55.11-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:55.11-0700 [DownloadCache]                  DEBUG Request: /new-relic/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:55.21-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:55.21-0700 [DownloadCache]                  DEBUG Persisting etag: "7cbefa6365d954eacfee953a60c291e6"
+2014-04-21T11:18:55.21-0700 [DownloadCache]                  DEBUG Persisting last-modified: Fri, 28 Mar 2014 11:54:01 GMT
+2014-04-21T11:18:55.21-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fnew-relic%2Findex.yml.cached
+2014-04-21T11:18:55.21-0700 [DownloadCache]                  DEBUG Validated content size 2424 is 2424
+2014-04-21T11:18:55.22-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:55.30-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:55.30-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Persisting etag: "4c16c803b439ff61c3d1c27edee61837"
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 01 Apr 2014 07:39:15 GMT
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fauto-reconfiguration%2Findex.yml.cached
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Validated content size 1084 is 1084
+2014-04-21T11:18:55.49-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:55.57-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:55.57-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Persisting etag: "15769297c4a15ff9ca99b00b07a5d066"
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 01 Apr 2014 07:39:28 GMT
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fplay-jpa-plugin%2Findex.yml.cached
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Validated content size 644 is 644
+2014-04-21T11:18:55.69-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:55.77-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:55.77-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Persisting etag: "5831cdc703c5fdc91397611f14684925"
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 18 Mar 2014 16:17:01 GMT
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.pivotal.io.s3.amazonaws.com%2Fpostgresql-jdbc%2Findex.yml.cached
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Validated content size 1194 is 1194
+2014-04-21T11:18:55.88-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:55.96-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:55.96-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:18:56.04-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.04-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 17 Apr 2014 17:40:42 GMT"]}
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 27 Mar 2014 17:16:51 GMT"]}
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.08-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/wls1212_dev.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/jre-7u51-linux-x64.tar.gz, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 04 Mar 2014 23:19:50 GMT
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Persisting last-modified: Fri, 14 Mar 2014 18:41:33 GMT
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fwls%2Fwls1212_dev.zip.cached
+2014-04-21T11:18:56.09-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2F12.1.1.1:7777%2Ffileserver%2Fjdk%2Fjre-7u51-linux-x64.tar.gz.cached
+2014-04-21T11:18:56.14-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.14-0700 [DownloadCache]                  DEBUG Request: /groovy/groovy-2.2.2.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.14-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.14-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/spring-boot-cli-1.0.0_RELEASE.tar.gz, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting etag: "b3c271fc85ab29ae6a0f1420f7bb2833-6"
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 03 Mar 2014 15:12:13 GMT
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fgroovy%2Fgroovy-2.2.2.zip.cached
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting etag: "d3c9314517c431ef4a6b611d21e8263c"
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 01 Apr 2014 16:17:41 GMT
+2014-04-21T11:18:56.15-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fspring-boot-cli%2Fspring-boot-cli-1.0.0_RELEASE.tar.gz.cached
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"67f05421632494a834a51b0a7a057db4\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:24:29 GMT"]}
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"9801e88633bf0222339affd1995914ea\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:21:38 GMT"]}
+2014-04-21T11:18:56.16-0700 [DownloadCache]                  DEBUG Request: /groovy/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d374edc3ae561f50674d82120950847a\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:18:34 GMT"]}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d082b51a94ab7fe75edcd5aac27dca56\""], "if-modified-since"=>["Mon, 14 Apr 2014 12:05:14 GMT"]}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG Request: /new-relic/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"7cbefa6365d954eacfee953a60c291e6\""], "if-modified-since"=>["Fri, 28 Mar 2014 11:54:01 GMT"]}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"15769297c4a15ff9ca99b00b07a5d066\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:28 GMT"]}
+2014-04-21T11:18:56.17-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"5831cdc703c5fdc91397611f14684925\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:17:01 GMT"]}
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.26-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.27-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.28-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.28-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/mariadb-jdbc-1.1.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.28-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.28-0700 [DownloadCache]                  DEBUG Request: /new-relic/new-relic-3.4.1.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.29-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.29-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/play-jpa-plugin-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.29-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.29-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/auto-reconfiguration-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.30-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.30-0700 [DownloadCache]                  DEBUG Persisting etag: "f10a420bf759c6037f8963451be8b79a"
+2014-04-21T11:18:56.30-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.30-0700 [DownloadCache]                  DEBUG Persisting etag: "a532f76f641076c5d78243196e0cb8de"
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting etag: "1d779d93425b82f01757bf6f7b82379f"
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 28 Jan 2014 22:09:31 GMT
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting last-modified: Tue, 28 Jan 2014 22:09:46 GMT
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 07 Apr 2014 08:21:37 GMT
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fplay-jpa-plugin%2Fplay-jpa-plugin-0.8.7.jar.cached
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fauto-reconfiguration%2Fauto-reconfiguration-0.8.7.jar.cached
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fmariadb-jdbc%2Fmariadb-jdbc-1.1.7.jar.cached
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Validated content size 4614 is 4614
+2014-04-21T11:18:56.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:56.32-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.32-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/postgresql-jdbc-9.3.1101.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:56.35-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.35-0700 [DownloadCache]                  DEBUG Persisting etag: "21442bb6ed379a357942dfd7c45c0f2a"
+2014-04-21T11:18:56.35-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:56.35-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:18:56.35-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 24 Feb 2014 14:51:12 GMT
+2014-04-21T11:18:56.36-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fpostgresql-jdbc%2Fpostgresql-jdbc-9.3.1101.jar.cached
+2014-04-21T11:18:56.41-0700 [DownloadCache]                  DEBUG Validated content size 46904005 is 46904005
+2014-04-21T11:18:56.45-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:56.45-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:56.46-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:56.46-0700 [DownloadCache]                  DEBUG Persisting etag: "4a76eb768f4a9f1d040b9e04c73c67db"
+2014-04-21T11:18:56.46-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 03 Feb 2014 14:50:02 GMT
+2014-04-21T11:18:56.46-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fnew-relic%2Fnew-relic-3.4.1.jar.cached
+2014-04-21T11:18:56.64-0700 [DownloadCache]                  DEBUG Validated content size 230704 is 230704
+2014-04-21T11:18:56.94-0700 [DownloadCache]                  DEBUG Validated content size 588974 is 588974
+2014-04-21T11:18:56.97-0700 [DownloadCache]                  DEBUG Validated content size 190441541 is 190441541
+2014-04-21T11:18:57.26-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:57.26-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:57.30-0700 [DownloadCache]                  DEBUG Validated content size 1340652 is 1340652
+2014-04-21T11:18:57.30-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:18:57.31-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:57.31-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/auto-reconfiguration-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"f10a420bf759c6037f8963451be8b79a\""], "if-modified-since"=>["Tue, 28 Jan 2014 22:09:31 GMT"]}
+2014-04-21T11:18:57.32-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:18:57.32-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:18:57.46-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:18:57.46-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/app-dynamics-3.7.17.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"]}
+2014-04-21T11:18:57.48-0700 [DownloadCache]                  DEBUG Status: 200
+2014-04-21T11:18:57.48-0700 [DownloadCache]                  DEBUG Persisting etag: "e6dbfe5fd672d40ac4e4bec0d0c077ae"
+2014-04-21T11:18:57.48-0700 [DownloadCache]                  DEBUG Persisting last-modified: Mon, 24 Mar 2014 08:25:31 GMT
+2014-04-21T11:18:57.48-0700 [DownloadCache]                  DEBUG Persisting content to build/staging/resources/cache/http:%2F%2Fdownload.run.pivotal.io%2Fapp-dynamics%2Fapp-dynamics-3.7.17.zip.cached
+2014-04-21T11:18:59.67-0700 [DownloadCache]                  DEBUG Validated content size 7399767 is 7399767
+2014-04-21T11:19:01.68-0700 [DownloadCache]                  DEBUG Validated content size 9306247 is 9306247
+2014-04-21T11:19:02.15-0700 [DownloadCache]                  DEBUG Validated content size 6371743 is 6371743
+2014-04-21T11:19:06.13-0700 [DownloadCache]                  DEBUG Validated content size 29713408 is 29713408
+2014-04-21T11:22:10.54-0700 [ConfigurationUtils]             DEBUG Configuration from /Users/sparameswaran/workspace/weblogic-buildpack/config/cache.yml: {"remote_downloads"=>"enabled"}
+2014-04-21T11:22:10.54-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:10.65-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:10.65-0700 [DownloadCache]                  DEBUG Request: /groovy/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d374edc3ae561f50674d82120950847a\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:18:34 GMT"]}
+2014-04-21T11:22:10.75-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:10.75-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:10.75-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:10.87-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:10.87-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"67f05421632494a834a51b0a7a057db4\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:24:29 GMT"]}
+2014-04-21T11:22:10.96-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:10.96-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:10.96-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 17 Apr 2014 17:40:42 GMT"]}
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 27 Mar 2014 17:16:51 GMT"]}
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:10.97-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:11.06-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:11.06-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d082b51a94ab7fe75edcd5aac27dca56\""], "if-modified-since"=>["Mon, 14 Apr 2014 12:05:14 GMT"]}
+2014-04-21T11:22:11.16-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:11.16-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:11.16-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:11.25-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:11.25-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"9801e88633bf0222339affd1995914ea\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:21:38 GMT"]}
+2014-04-21T11:22:11.34-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:11.34-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:11.34-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:11.44-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:11.44-0700 [DownloadCache]                  DEBUG Request: /new-relic/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"7cbefa6365d954eacfee953a60c291e6\""], "if-modified-since"=>["Fri, 28 Mar 2014 11:54:01 GMT"]}
+2014-04-21T11:22:11.54-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:11.54-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:11.54-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:11.62-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:11.62-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:22:11.72-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:11.72-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:11.72-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:11.81-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:11.81-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"15769297c4a15ff9ca99b00b07a5d066\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:28 GMT"]}
+2014-04-21T11:22:11.92-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:11.92-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:11.92-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.00-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.00-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"5831cdc703c5fdc91397611f14684925\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:17:01 GMT"]}
+2014-04-21T11:22:12.10-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.10-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.11-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.20-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.20-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:22:12.29-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.29-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.31-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.32-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 17 Apr 2014 17:40:42 GMT"]}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Thu, 27 Mar 2014 17:16:51 GMT"]}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG HTTP: 12.1.1.1, 7777, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Request: /fileserver/wls/wls1212_dev.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Tue, 04 Mar 2014 23:19:50 GMT"]}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Request: /fileserver/jdk/jre-7u51-linux-x64.tar.gz, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-modified-since"=>["Fri, 14 Mar 2014 18:41:33 GMT"]}
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.33-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.35-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.35-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.35-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.35-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.35-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/app-dynamics-3.7.17.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"e6dbfe5fd672d40ac4e4bec0d0c077ae\""], "if-modified-since"=>["Mon, 24 Mar 2014 08:25:31 GMT"]}
+2014-04-21T11:22:12.36-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/spring-boot-cli-1.0.0_RELEASE.tar.gz, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d3c9314517c431ef4a6b611d21e8263c\""], "if-modified-since"=>["Tue, 01 Apr 2014 16:17:41 GMT"]}
+2014-04-21T11:22:12.36-0700 [DownloadCache]                  DEBUG Request: /groovy/groovy-2.2.2.zip, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"b3c271fc85ab29ae6a0f1420f7bb2833-6\""], "if-modified-since"=>["Mon, 03 Mar 2014 15:12:13 GMT"]}
+2014-04-21T11:22:12.36-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/mariadb-jdbc-1.1.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"1d779d93425b82f01757bf6f7b82379f\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:21:37 GMT"]}
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.37-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Request: /new-relic/new-relic-3.4.1.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4a76eb768f4a9f1d040b9e04c73c67db\""], "if-modified-since"=>["Mon, 03 Feb 2014 14:50:02 GMT"]}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/auto-reconfiguration-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"f10a420bf759c6037f8963451be8b79a\""], "if-modified-since"=>["Tue, 28 Jan 2014 22:09:31 GMT"]}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/play-jpa-plugin-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"a532f76f641076c5d78243196e0cb8de\""], "if-modified-since"=>["Tue, 28 Jan 2014 22:09:46 GMT"]}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.38-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/postgresql-jdbc-9.3.1101.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"21442bb6ed379a357942dfd7c45c0f2a\""], "if-modified-since"=>["Mon, 24 Feb 2014 14:51:12 GMT"]}
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.40-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /play-jpa-plugin/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"15769297c4a15ff9ca99b00b07a5d066\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:28 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /spring-boot-cli/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"67f05421632494a834a51b0a7a057db4\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:24:29 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /postgresql-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"5831cdc703c5fdc91397611f14684925\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:17:01 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /mariadb-jdbc/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"9801e88633bf0222339affd1995914ea\""], "if-modified-since"=>["Mon, 07 Apr 2014 08:21:38 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /new-relic/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"7cbefa6365d954eacfee953a60c291e6\""], "if-modified-since"=>["Fri, 28 Mar 2014 11:54:01 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /app-dynamics/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d082b51a94ab7fe75edcd5aac27dca56\""], "if-modified-since"=>["Mon, 14 Apr 2014 12:05:14 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /groovy/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"d374edc3ae561f50674d82120950847a\""], "if-modified-since"=>["Tue, 18 Mar 2014 16:18:34 GMT"]}
+2014-04-21T11:22:12.41-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:22:12.43-0700 [DownloadCache]                  DEBUG HTTP: download.run.pivotal.io, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.43-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/auto-reconfiguration-0.8.7.jar, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"f10a420bf759c6037f8963451be8b79a\""], "if-modified-since"=>["Tue, 28 Jan 2014 22:09:31 GMT"]}
+2014-04-21T11:22:12.44-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.44-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.50-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.50-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.50-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.50-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.51-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.53-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.53-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.56-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.56-0700 [DownloadCache]                  DEBUG Cached copy up to date
+2014-04-21T11:22:12.56-0700 [DownloadCache]                  DEBUG Proxy: , , , 
+2014-04-21T11:22:12.65-0700 [DownloadCache]                  DEBUG HTTP: download.pivotal.io.s3.amazonaws.com, 80, {:read_timeout=>10, :connect_timeout=>10, :open_timeout=>10, :use_ssl=>false}
+2014-04-21T11:22:12.65-0700 [DownloadCache]                  DEBUG Request: /auto-reconfiguration/index.yml, {"accept-encoding"=>["gzip;q=1.0,deflate;q=0.6,identity;q=0.3"], "accept"=>["*/*"], "user-agent"=>["Ruby"], "if-none-match"=>["\"4c16c803b439ff61c3d1c27edee61837\""], "if-modified-since"=>["Tue, 01 Apr 2014 07:39:15 GMT"]}
+2014-04-21T11:22:12.75-0700 [DownloadCache]                  DEBUG Status: 304
+2014-04-21T11:22:12.75-0700 [DownloadCache]                  DEBUG Cached copy up to date

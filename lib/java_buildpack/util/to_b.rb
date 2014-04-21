@@ -14,28 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'java_buildpack/buildpack_version'
+# A mixin that adds the ability to turn a +String+ into a boolean
+class String
 
-module Package
-
-  def self.offline
-    '-offline' if BUILDPACK_VERSION.offline
+  # Converts a +String+ to a boolean
+  #
+  # @return [Boolean] +true+ if +<STRING>.downcase == 'true'+.  +false+ otherwise
+  def to_b
+    downcase == 'true'
   end
 
-  def self.version
-    BUILDPACK_VERSION.version || 'unknown'
+end
+
+# A mixin that adds the ability to turn a +nil+ into a boolean
+class NilClass
+
+  # Converts a +nil+ to a boolean
+  #
+  # @return [Boolean] +false+ always
+  def to_b
+    false
   end
-
-  ARCHITECTURES = %w(x86_64).freeze
-
-  BUILD_DIR = 'build'.freeze
-
-  BUILDPACK_VERSION = JavaBuildpack::BuildpackVersion.new(false).freeze
-
-  PLATFORMS = %w(centos6 lucid mountainlion precise).freeze
-
-  STAGING_DIR = "#{BUILD_DIR}/staging".freeze
-
-  PACKAGE_NAME = "#{BUILD_DIR}/weblogic-buildpack#{offline}-#{version}.zip".freeze
 
 end
