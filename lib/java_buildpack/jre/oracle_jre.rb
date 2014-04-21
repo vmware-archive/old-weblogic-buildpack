@@ -27,10 +27,11 @@ module JavaBuildpack::Jre
     APP_WLS_CONFIG_CACHE_DIR       = '.wls'.freeze
 
     def supports?
-      searchPath = (@application.root).to_s + "/**/weblogic*xml"
-      wlsConfigPresent = Dir.glob(searchPath).length > 0
+      true
 
-      ((@application.root + APP_WLS_CONFIG_CACHE_DIR).exist? || wlsConfigPresent)
+      #searchPath = (@application.root).to_s + "/**/weblogic*xml"
+      #wlsConfigPresent = Dir.glob(searchPath).length > 0
+      #((@application.root + APP_WLS_CONFIG_CACHE_DIR).exist? || wlsConfigPresent)
     end
 
   end

@@ -188,7 +188,7 @@ module JavaBuildpack::Container
       if (@wlsDomainYamlConfigFile.nil?)
         system "mkdir #{@appConfigCacheRoot} 2>/dev/null; cp  #{@buildpackConfigCacheRoot}/*.yml #{@appConfigCacheRoot}"
         @wlsDomainYamlConfigFile  = Dir.glob("#{@appConfigCacheRoot}/*.yml")[0]
-        #@wlsDomainYamlConfigFile  = Dir.glob("#{@buildpackConfigCacheRoot}/*.yml")[0]
+        logger.debug { "No Domain Configuration yml file found, creating one from the buildpack bundled template!!" }
       end
 
       domainConfiguration       = YAML.load_file(@wlsDomainYamlConfigFile)
@@ -221,6 +221,7 @@ module JavaBuildpack::Container
       # If there is no Domain Script, use the buildpack bundled script.
       if (@wlsDomainConfigScript.nil?)
         @wlsDomainConfigScript  = Dir.glob("#{@buildpackConfigCacheRoot}/#{WLS_SCRIPT_CACHE_DIR}/*.py")[0]
+        logger.debug { "No Domain creation script found, reusing one from the buildpack bundled template!!" }
       end
 
 
@@ -543,7 +544,16 @@ module JavaBuildpack::Container
       searchPath = (@application.root).to_s + "/**/weblogic*xml"
       wlsConfigPresent = Dir.glob(searchPath).length > 0
 
-      ((@application.root + APP_WLS_CONFIG_CACHE_DIR).exist? || wlsConfigPresent)
+      appWlsConfigCacheExists = (@application.root + APP_WLS_CONFIG_CACHE_DIR).exist?
+      isBaseWebApp = web_inf?
+
+      logger.debug { "Running Detection on App: #{@application.root}" }
+      logger.debug { "  Checking for presence of #{APP_WLS_CONFIG_CACHE_DIR} folder under root of the App or weblogic deployment descriptors within App" }
+      logger.debug { "  Does #{APP_WLS_CONFIG_CACHE_DIR} folder exist under root of the App? : #{appWlsConfigCacheExists}" }
+      logger.debug { "  Does  weblogic deployment descriptors exist within App? : #{wlsConfigPresent}" }
+      logger.debug { "  Or is it a simple Web Application with WEB-INF folder? : " + isBaseWebApp.to_s }
+
+      (appWlsConfigCacheExists || wlsConfigPresent || web_inf?)
     end
 
     # Determine which configurations should be used for driving the domain creation - App or buildpack bundled configuration
@@ -623,60 +633,6 @@ module JavaBuildpack::Container
       system "/bin/ln -s #{@appConfigCacheRoot}/#{WLS_PRE_JARS_CACHE_DIR} #{@domainHome}/#{WLS_PRE_JARS_CACHE_DIR} 2>/dev/null"
       system "/bin/ln -s #{@appConfigCacheRoot}/#{WLS_POST_JARS_CACHE_DIR} #{@domainHome}/#{WLS_POST_JARS_CACHE_DIR} 2>/dev/null"
 
-    end
-
-    def convertYml2Props(inputYmlFile, outputPropFile)
-
-      ymlInput = File.open(inputYmlFile, 'r')
-      propsOutput = File.open(outputPropFile, 'w')
-
-      notReachedDomainSection = true
-
-      while (line = ymlInput.gets)
-
-        # Jython ConfigParser cannot handle '--' in yml file
-        # Skip '--' entry from yml file and other entries as well that are not related to WLS
-        # till we hit the Domain section
-
-        if ( notReachedDomainSection && !line[/Domain/])
-          next
-        else
-          notReachedDomainSection = false
-        end
-
-        if  line[/: *$/]
-          propsOutput << "[" + line.sub(":","]")
-        elsif line[/^  /] && line[/: /]
-          propsOutput << line.sub(": ","=").lstrip()
-        else
-          propsOutput << line.lstrip()
-        end
-      end
-      ymlInput.close
-      propsOutput.close
-    end
-
-    def convertProp2Yml(inputPropFile, outputYmlFile)
-
-
-      propsInput = File.open(inputPropFile, 'r')
-      ymlOutput = File.open(outputYamlFile, 'w')
-
-      # Jython ConfigParser cannot handle '--' in the beginning of the yml file, so it got removed earlier
-      # So add back the '--' entry into yml file directly while converting from props file
-      ymlOutput << "--\n"
-
-      while (line = propsInput.gets)
-        if  line[/^\[/]
-          ymlOutput << line.gsub("[","").gsub("]", ":  ")
-        elsif  line[/^ *#/]
-          ymlOutput << line
-        else
-          ymlOutput << "  " + line.sub("=",": ")
-        end
-      end
-      propsInput.close
-      ymlOutput.close
     end
 
     def logger
